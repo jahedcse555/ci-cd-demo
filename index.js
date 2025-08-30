@@ -14,6 +14,7 @@ if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 // SQLite DB
 const dbPath = path.join(__dirname, "data/news.db");
+if (!fs.existsSync(path.dirname(dbPath))) fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) console.error(err);
   else console.log("Connected to SQLite DB");

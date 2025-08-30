@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jahed's News Portal</title>
+<title>NewsPortal</title>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
 <header class="site-header">
   <div class="container header-container">
-    <h1 class="site-logo"><a href="/">📰 NewsPortal</a></h1>
+    <h1 class="site-logo"><a href="/">📰 Jahed's News Portal</a></h1>
     <nav>
       <a href="/new" class="btn btn-primary">Write News</a>
     </nav>
@@ -21,7 +21,6 @@
   <% if(news.length === 0){ %>
     <p class="empty-msg">No news yet. Be the first to publish!</p>
   <% } else { %>
-    <!-- News Grid -->
     <section class="news-grid">
       <% news.forEach(article => { %>
         <div class="news-card">
@@ -34,6 +33,7 @@
             <span class="author">By <strong><%= article.author %></strong></span>
             <span class="time">🕒 <%= new Date(article.created_at).toLocaleString() %></span>
           </div>
+          <a href="/delete/<%= article.id %>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
         </div>
       <% }) %>
     </section>

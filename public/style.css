@@ -80,6 +80,17 @@ nav .btn-primary {
   font-size:0.9rem;
   color:#666;
 }
+.delete-btn {
+  background:#ef4444;
+  color:white;
+  padding:0.4rem 0.8rem;
+  border-radius:5px;
+  text-decoration:none;
+  font-size:0.9rem;
+}
+.delete-btn:hover {
+  background:#dc2626;
+}
 .site-footer {
   background:#1f2937;
   color:white;
