@@ -1,11 +1,15 @@
+<h1>News Articles</h1>
+
 <% if (news.length === 0) { %>
-  <p>No news articles yet.</p>
-<% } else { %>
-  <% news.forEach(article => { %>
-    <article>
-      <h2><%= article.title %></h2>
-      <p><%= article.content %></p>
-      <small>🕒 <%= article.created_at %></small>
-    </article>
-  <% }) %>
+  <p>Be the first to publish a news article!</p>
 <% } %>
+
+<% news.forEach(article => { %>
+  <article>
+    <h2><%= article.title %></h2>
+    <p><%= article.content %></p>
+    <small>🕒 <%= article.created_at %></small><br>
+    <a href="/edit/<%= article.id %>">Edit</a> |
+    <a href="/delete/<%= article.id %>">Delete</a>
+  </article>
+<% }) %>
