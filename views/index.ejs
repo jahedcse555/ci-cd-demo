@@ -1,19 +1,27 @@
 <h2>Latest News</h2>
 
-<div class="news-list">
-<% if (news.length === 0) { %>
-  <p class="empty-msg">Be the first to publish a news article!</p>
-<% } %>
+<!-- Write News Button -->
+<div style="text-align: right; margin-bottom: 1rem;">
+  <a href="/new" class="btn">📝 Write a News</a>
+</div>
 
-<% news.forEach(article => { %>
-  <div class="news-card">
-    <h3><%= article.title %></h3>
-    <p><%= article.content %></p>
-    <small>🕒 <%= new Date(article.created_at).toLocaleString() %></small>
-    <div class="actions">
-      <a href="/edit/<%= article.id %>" class="edit-btn">Edit</a>
-      <a href="/delete/<%= article.id %>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+<div class="news-list">
+  <% if (news.length === 0) { %>
+    <p class="empty-msg">Be the first to publish a news article!</p>
+  <% } %>
+
+  <% news.forEach(article => { %>
+    <div class="news-card">
+      <h3><%= article.title %></h3>
+      <p><%= article.content %></p>
+      <small>
+        By <strong><%= article.author %></strong> |
+        🕒 <%= new Date(article.created_at).toLocaleString() %>
+      </small>
+      <div class="actions">
+        <a href="/edit/<%= article.id %>" class="edit-btn">Edit</a>
+        <a href="/delete/<%= article.id %>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+      </div>
     </div>
-  </div>
-<% }) %>
+  <% }) %>
 </div>

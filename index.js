@@ -2,36 +2,41 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// persistent db folder
-const dbPath = path.join(__dirname, "data", "news.db");
-const fs = require("fs");
-if (!fs.existsSync(path.dirname(dbPath))) fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+// Ensure persistent data folder
+const dbFolder = path.join(__dirname, "data");
+if (!fs.existsSync(dbFolder)) fs.mkdirSync(dbFolder, { recursive: true });
 
+// SQLite database
+const dbPath = path.join(dbFolder, "news.db");
 const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) console.error("DB error", err);
+  if (err) console.error("DB error:", err);
   else console.log("Connected to SQLite DB");
 });
 
-// create table if not exists
+// Create news table if not exists (with author)
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS news (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     content TEXT NOT NULL,
+    author TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
 });
 
-// middleware
+// Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 
-// routes
+// Routes
+
+// Home - list all news
 app.get("/", (req, res) => {
   db.all("SELECT * FROM news ORDER BY created_at DESC", [], (err, rows) => {
     if (err) throw err;
@@ -39,16 +44,23 @@ app.get("/", (req, res) => {
   });
 });
 
+// New news form
 app.get("/new", (req, res) => res.render("new"));
 
+// Add new article
 app.post("/new", (req, res) => {
-  const { title, content } = req.body;
-  db.run("INSERT INTO news (title, content) VALUES (?, ?)", [title, content], (err) => {
-    if (err) throw err;
-    res.redirect("/");
-  });
+  const { title, content, author } = req.body;
+  db.run(
+    "INSERT INTO news (title, content, author) VALUES (?, ?, ?)",
+    [title, content, author],
+    (err) => {
+      if (err) throw err;
+      res.redirect("/");
+    }
+  );
 });
 
+// Edit news form
 app.get("/edit/:id", (req, res) => {
   const id = req.params.id;
   db.get("SELECT * FROM news WHERE id = ?", [id], (err, row) => {
@@ -57,15 +69,21 @@ app.get("/edit/:id", (req, res) => {
   });
 });
 
+// Update news
 app.post("/edit/:id", (req, res) => {
-  const { title, content } = req.body;
+  const { title, content, author } = req.body;
   const id = req.params.id;
-  db.run("UPDATE news SET title = ?, content = ? WHERE id = ?", [title, content, id], (err) => {
-    if (err) throw err;
-    res.redirect("/");
-  });
+  db.run(
+    "UPDATE news SET title = ?, content = ?, author = ? WHERE id = ?",
+    [title, content, author, id],
+    (err) => {
+      if (err) throw err;
+      res.redirect("/");
+    }
+  );
 });
 
+// Delete news
 app.get("/delete/:id", (req, res) => {
   const id = req.params.id;
   db.run("DELETE FROM news WHERE id = ?", [id], (err) => {
@@ -74,4 +92,5 @@ app.get("/delete/:id", (req, res) => {
   });
 });
 
+// Start server
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

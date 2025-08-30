@@ -1,11 +1,14 @@
 <h2>Write a News Article</h2>
 <form method="POST" action="/new">
-  <label>Title</label><br>
-  <input type="text" name="title" required><br><br>
+  <label>Your Name</label>
+  <input type="text" name="author" placeholder="Enter your name" required>
 
-  <label>Content</label><br>
-  <textarea name="content" rows="5" required></textarea><br><br>
+  <label>Title</label>
+  <input type="text" name="title" placeholder="Article title" required>
 
-  <button type="submit">Publish</button>
+  <label>Content</label>
+  <textarea name="content" rows="5" placeholder="Write your news here..." required></textarea>
+
+  <button type="submit" class="btn">Publish</button>
 </form>
-<a href="/">← Back to Home</a>
+<a href="/" class="back-link">← Back to Home</a>
