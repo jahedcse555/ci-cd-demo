@@ -1,206 +1,151 @@
 const express = require("express");
-const path = require("path");
 const multer = require("multer");
-const sqlite3 = require("sqlite3").verbose();
+const path = require("path");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
-
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-// View engine
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-
-// Middleware
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
-app.use(
-  session({
-    secret: "supersecretkey",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
+app.use(express.static("public"));
+app.use("/uploads", express.static("uploads"));
 
-// ===== Database =====
-const db = new sqlite3.Database("./data/news.db");
-db.serialize(() => {
-  db.run(
-    "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT, role TEXT DEFAULT 'user')"
-  );
-  db.run(
-    "CREATE TABLE IF NOT EXISTS news (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, body TEXT, author TEXT, image TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, deleted INTEGER DEFAULT 0)"
-  );
+app.use(session({
+  secret: "secret-key",
+  resave: false,
+  saveUninitialized: false
+}));
 
-  // Seed an admin if not exists
-  db.get("SELECT * FROM users WHERE username='admin'", async (err, row) => {
-    if (!row) {
-      const hashed = await bcrypt.hash("admin123", 10);
-      db.run(
-        "INSERT INTO users (username, password, role) VALUES (?,?,?)",
-        ["admin", hashed, "admin"]
-      );
-      console.log("✅ Admin user created (username: admin, password: admin123)");
-    }
-  });
-});
-
-// ===== File Upload =====
+// Multer setup for image uploads
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "public/uploads"),
-  filename: (req, file, cb) =>
-    cb(null, Date.now() + path.extname(file.originalname)),
+  destination: "./uploads/",
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
 });
 const upload = multer({ storage });
 
-// ===== Middleware =====
-function requireLogin(req, res, next) {
-  if (!req.session.user) return res.redirect("/login");
-  next();
-}
+// ===== In-memory database =====
+let users = [
+  { id: 1, username: "admin", password: bcrypt.hashSync("admin", 10), role: "admin" }
+];
+let newsList = [];
 
-function requireAdmin(req, res, next) {
-  if (!req.session.user || req.session.user.role !== "admin") {
-    return res.redirect("/");
-  }
+// Middleware to make user available in all views
+app.use((req, res, next) => {
+  res.locals.user = req.session.user;
   next();
-}
+});
 
 // ===== Routes =====
 
-// Home
+// Home page
 app.get("/", (req, res) => {
-  db.all("SELECT * FROM news WHERE deleted = 0 ORDER BY created_at DESC", [], (err, news) => {
-    res.render("index", { news, user: req.session.user });
-  });
+  res.render("index", { newsList });
 });
 
-// Register
-app.get("/register", (req, res) => res.render("register", { error: null }));
+// News details
+app.get("/news/:id", (req, res) => {
+  const news = newsList.find(n => n.id == req.params.id);
+  if (!news) return res.send("News not found");
+  res.render("news-details", { news });
+});
 
+// Write news (only logged in)
+app.get("/news/write", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+  res.render("write-news");
+});
+
+app.post("/news", upload.single("image"), (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+  const { title, body, author } = req.body;
+  newsList.push({
+    id: Date.now(),
+    title,
+    body,
+    author,
+    image: req.file ? req.file.filename : null,
+    user_id: req.session.user.id,
+    created_at: new Date(),
+    deleted: false
+  });
+  res.redirect("/");
+});
+
+// Edit & Delete news (only author/admin)
+app.get("/news/:id/edit", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+  const news = newsList.find(n => n.id == req.params.id);
+  if (!news) return res.send("News not found");
+  if (req.session.user.role !== "admin" && req.session.user.id !== news.user_id) return res.send("Unauthorized");
+  res.render("edit-news", { news });
+});
+
+app.post("/news/:id/edit", upload.single("image"), (req, res) => {
+  const news = newsList.find(n => n.id == req.params.id);
+  if (!news) return res.send("News not found");
+  if (req.session.user.role !== "admin" && req.session.user.id !== news.user_id) return res.send("Unauthorized");
+
+  news.title = req.body.title;
+  news.body = req.body.body;
+  news.author = req.body.author;
+  if (req.file) news.image = req.file.filename;
+  res.redirect("/news/" + news.id);
+});
+
+app.post("/news/:id/delete", (req, res) => {
+  const news = newsList.find(n => n.id == req.params.id);
+  if (!news) return res.send("News not found");
+  if (req.session.user.role !== "admin" && req.session.user.id !== news.user_id) return res.send("Unauthorized");
+  news.deleted = true; // soft delete
+  res.redirect("/");
+});
+
+// ===== Login/Register =====
+app.get("/register", (req, res) => res.render("register"));
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
   const hashed = await bcrypt.hash(password, 10);
-  db.run(
-    "INSERT INTO users (username, password, role) VALUES (?,?,?)",
-    [username, hashed, "user"],
-    function (err) {
-      if (err) return res.render("register", { error: "Username already exists" });
-      res.redirect("/login");
-    }
-  );
+  users.push({ id: Date.now(), username, password: hashed, role: "user" });
+  res.redirect("/login");
 });
 
-// Login
-app.get("/login", (req, res) => res.render("login", { error: null }));
-
-app.post("/login", (req, res) => {
+app.get("/login", (req, res) => res.render("login"));
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  db.get("SELECT * FROM users WHERE username=?", [username], async (err, user) => {
-    if (!user) return res.render("login", { error: "Invalid username" });
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.render("login", { error: "Invalid password" });
-    req.session.user = { id: user.id, username: user.username, role: user.role };
+  const user = users.find(u => u.username === username);
+  if (user && await bcrypt.compare(password, user.password)) {
+    req.session.user = user;
     res.redirect("/");
-  });
+  } else {
+    res.send("Invalid credentials");
+  }
 });
 
-// Logout
 app.get("/logout", (req, res) => {
   req.session.destroy();
   res.redirect("/");
 });
 
-// Write news
-app.get("/news/new", requireLogin, (req, res) => {
-  res.render("new-news", { user: req.session.user });
-});
-
-app.post("/news", requireLogin, upload.single("image"), (req, res) => {
-  const { title, body } = req.body;
-  const image = req.file ? "/uploads/" + req.file.filename : null;
-  db.run(
-    "INSERT INTO news (title, body, author, image) VALUES (?,?,?,?)",
-    [title, body, req.session.user.username, image],
-    () => res.redirect("/")
-  );
-});
-
-// Read details
-app.get("/news/:id", (req, res) => {
-  db.get("SELECT * FROM news WHERE id=?", [req.params.id], (err, article) => {
-    if (!article) return res.redirect("/");
-    res.render("news-details", { article, user: req.session.user });
-  });
-});
-
-// Edit
-app.get("/news/:id/edit", requireLogin, (req, res) => {
-  db.get("SELECT * FROM news WHERE id=?", [req.params.id], (err, article) => {
-    if (
-      !article ||
-      (article.author !== req.session.user.username && req.session.user.role !== "admin")
-    ) {
-      return res.redirect("/");
-    }
-    res.render("edit-news", { article, user: req.session.user });
-  });
-});
-
-app.post("/news/:id/edit", requireLogin, upload.single("image"), (req, res) => {
-  const { title, body } = req.body;
-  const image = req.file ? "/uploads/" + req.file.filename : null;
-  db.get("SELECT * FROM news WHERE id=?", [req.params.id], (err, article) => {
-    if (
-      article.author !== req.session.user.username &&
-      req.session.user.role !== "admin"
-    )
-      return res.redirect("/");
-    db.run(
-      "UPDATE news SET title=?, body=?, image=? WHERE id=?",
-      [title, body, image || article.image, req.params.id],
-      () => res.redirect("/news/" + req.params.id)
-    );
-  });
-});
-
-// Delete (soft delete)
-app.post("/news/:id/delete", requireLogin, (req, res) => {
-  db.get("SELECT * FROM news WHERE id=?", [req.params.id], (err, article) => {
-    if (
-      article.author !== req.session.user.username &&
-      req.session.user.role !== "admin"
-    )
-      return res.redirect("/");
-    db.run("UPDATE news SET deleted=1 WHERE id=?", [req.params.id], () =>
-      res.redirect("/")
-    );
-  });
-});
-
 // ===== Admin Dashboard =====
-app.get("/admin", requireAdmin, (req, res) => {
-  db.all("SELECT * FROM users", [], (err, users) => {
-    db.all("SELECT * FROM news ORDER BY created_at DESC", [], (err, news) => {
-      res.render("admin-dashboard", { users, news, user: req.session.user });
-    });
-  });
+app.get("/admin", (req, res) => {
+  if (!req.session.user || req.session.user.role !== "admin") return res.send("Unauthorized");
+  res.render("admin-dashboard", { users, news: newsList });
 });
 
-// Promote user to admin
-app.post("/admin/users/:id/promote", requireAdmin, (req, res) => {
-  db.run("UPDATE users SET role='admin' WHERE id=?", [req.params.id], () =>
-    res.redirect("/admin")
-  );
+app.post("/admin/users/:id/promote", (req, res) => {
+  const user = users.find(u => u.id == req.params.id);
+  if (user) user.role = "admin";
+  res.redirect("/admin");
 });
 
-// Demote admin to user
-app.post("/admin/users/:id/demote", requireAdmin, (req, res) => {
-  db.run("UPDATE users SET role='user' WHERE id=?", [req.params.id], () =>
-    res.redirect("/admin")
-  );
+app.post("/admin/users/:id/demote", (req, res) => {
+  const user = users.find(u => u.id == req.params.id);
+  if (user && user.username !== "admin") user.role = "user";
+  res.redirect("/admin");
 });
 
-// Start
-app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+// ===== Start Server =====
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log("Server running on port", PORT));
