@@ -1,0 +1,23 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0; padding: 0;
+  background: #f8f9fa;
+}
+
+header {
+  background: #222; color: #fff;
+  padding: 1rem;
+}
+
+header h1 a { color: #fff; text-decoration: none; }
+nav a { color: #61dafb; margin-left: 1rem; }
+
+main { padding: 1rem; }
+
+article {
+  background: white;
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
