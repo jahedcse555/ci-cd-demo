@@ -1,35 +1,13 @@
 <%- include("partials/header") %>
 
-<div style="max-width:700px;margin:50px auto;background:#fff;padding:30px;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,0.15);">
-  <h2 style="text-align:center;margin-bottom:25px;">📝 Write a News Article</h2>
-  <form action="/news" method="POST" enctype="multipart/form-data">
-    <label>News Title</label>
-    <input type="text" name="title" required style="width:100%;padding:12px;margin-bottom:15px;border-radius:8px;border:1px solid #ccc;">
-    <label>Author Name</label>
-    <input type="text" name="author" required style="width:100%;padding:12px;margin-bottom:15px;border-radius:8px;border:1px solid #ccc;">
-    <label>News Content</label>
-    <textarea name="body" required style="width:100%;padding:12px;margin-bottom:15px;border-radius:8px;border:1px solid #ccc;min-height:120px;"></textarea>
-    <label>Upload Image</label>
-    <input type="file" name="image" accept="image/*" onchange="previewImage(event)" style="margin-bottom:10px;">
-    <div id="imagePreview" style="text-align:center;margin-bottom:15px;"></div>
-    <button type="submit" style="width:100%;padding:14px;background:#0077cc;color:#fff;border:none;border-radius:8px;">Publish News 🚀</button>
-  </form>
-  <a href="/" style="display:inline-block;margin-top:20px;text-decoration:none;padding:10px 16px;background:#555;color:#fff;border-radius:6px;">⬅ Back to Home</a>
-</div>
+<h2 style="text-align:center; margin:20px;">Write a News</h2>
 
-<script>
-function previewImage(event){
-  const preview=document.getElementById('imagePreview');
-  preview.innerHTML='';
-  const file=event.target.files[0];
-  if(file){
-    const img=document.createElement('img');
-    img.src=URL.createObjectURL(file);
-    img.style.maxWidth='100%';
-    img.style.borderRadius='8px';
-    preview.appendChild(img);
-  }
-}
-</script>
+<form action="/news" method="POST" enctype="multipart/form-data" style="max-width:600px; margin:auto;">
+  <input type="text" name="title" placeholder="News Title" required>
+  <textarea name="body" rows="6" placeholder="News Body" required></textarea>
+  <input type="file" name="image" accept="image/*">
+  <button type="submit">Publish News</button>
+  <a href="/" class="btn-read" style="margin-top:10px; display:inline-block;">Back to Home</a>
+</form>
 
 <%- include("partials/footer") %>

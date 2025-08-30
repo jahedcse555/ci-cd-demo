@@ -2,19 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>News Portal</title>
+  <title>Jahed News Portal</title>
   <link rel="stylesheet" href="/public/styles.css">
 </head>
 <body>
-  <nav style="background:#c70039;padding:15px;color:#fff;display:flex;justify-content:space-between;">
-    <a href="/" style="color:#fff;font-weight:bold;font-size:1.2rem;">NewsPortal</a>
+  <nav>
+    <a href="/">NewsPortal</a>
     <div>
       <% if (!user) { %>
-        <a href="/login" style="color:#fff;margin-right:15px;">Login</a>
-        <a href="/register" style="color:#fff;">Register</a>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
       <% } else { %>
-        <a href="/news/write" style="color:#fff;margin-right:15px;">Write News</a>
-        <a href="/logout" style="color:#fff;">Logout</a>
+        <a href="/news/write">Write News</a>
+        <a href="/logout">Logout</a>
       <% } %>
     </div>
   </nav>
+  <main>
