@@ -1,101 +1,25 @@
 <%- include("partials/header") %>
 
 <style>
-  body {
-    background: #f4f6f9;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
-    color: #222;
-  }
-  .hero {
-    width: 100%;
-    max-height: 450px;
-    overflow: hidden;
-    border-bottom: 5px solid #c70039;
-    margin-bottom: 30px;
-  }
-  .hero img {
-    width: 100%;
-    object-fit: cover;
-  }
-  .hero-content {
-    position: absolute;
-    bottom: 30px;
-    left: 50px;
-    color: #fff;
-    text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
-  }
-  .hero-content h1 {
-    font-size: 2.5rem;
-    margin: 0;
-  }
-  .hero-content p {
-    font-size: 1.1rem;
-  }
-  .news-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 25px;
-    padding: 20px 40px;
-  }
-  .news-card {
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  .news-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-  }
-  .news-card img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-  }
-  .news-card-body {
-    padding: 16px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  .news-card h2 {
-    font-size: 1.3rem;
-    margin-bottom: 10px;
-    color: #c70039;
-  }
-  .news-card p {
-    flex-grow: 1;
-    font-size: 1rem;
-    color: #444;
-    margin-bottom: 15px;
-  }
-  .news-card .meta {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 12px;
-  }
-  .btn-read {
-    align-self: flex-start;
-    text-decoration: none;
-    background: #0077cc;
-    color: #fff;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    transition: background 0.3s ease;
-  }
-  .btn-read:hover {
-    background: #005fa3;
-  }
+  body { font-family:"Segoe UI", sans-serif; background:#f4f6f9; margin:0; }
+  .hero { width:100%; max-height:450px; overflow:hidden; border-bottom:5px solid #c70039; margin-bottom:30px; position:relative; }
+  .hero img { width:100%; object-fit:cover; }
+  .hero-content { position:absolute; bottom:30px; left:50px; color:#fff; text-shadow:2px 2px 6px rgba(0,0,0,0.7); }
+  .hero-content h1 { font-size:2.5rem; margin:0; }
+  .hero-content p { font-size:1.1rem; }
+  .btn-read { text-decoration:none; background:#0077cc; color:#fff; padding:8px 14px; border-radius:6px; font-weight:bold; margin-top:10px; display:inline-block; }
+  .btn-read:hover { background:#005fa3; }
+  .news-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:25px; padding:0 40px; }
+  .news-card { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 6px 14px rgba(0,0,0,0.15); display:flex; flex-direction:column; transition: transform 0.3s, box-shadow 0.3s; }
+  .news-card:hover { transform:translateY(-6px); box-shadow:0 10px 20px rgba(0,0,0,0.2); }
+  .news-card img { width:100%; height:200px; object-fit:cover; }
+  .news-card-body { padding:16px; flex-grow:1; display:flex; flex-direction:column; }
+  .news-card h2 { font-size:1.3rem; margin-bottom:10px; color:#c70039; }
+  .news-card p { flex-grow:1; font-size:1rem; color:#444; margin-bottom:15px; }
+  .meta { font-size:0.9rem; color:#666; margin-bottom:12px; }
 </style>
 
 <% if (newsList.length > 0) { %>
-  <!-- Featured Hero News -->
   <div class="hero">
     <img src="/uploads/<%= newsList[0].image || 'default.jpg' %>" alt="Featured News">
     <div class="hero-content">
@@ -104,21 +28,22 @@
       <a href="/news/<%= newsList[0].id %>" class="btn-read">Read More</a>
     </div>
   </div>
-<% } %>
 
-<!-- Grid of other news -->
-<div class="news-grid">
-  <% newsList.slice(1).forEach(news => { %>
-    <div class="news-card">
-      <img src="/uploads/<%= news.image || 'default.jpg' %>" alt="News Image">
-      <div class="news-card-body">
-        <h2><%= news.title %></h2>
-        <p><%= news.body.substring(0, 100) %>...</p>
-        <p class="meta">🖊️ <%= news.author %> | 🕒 <%= new Date(news.created_at).toLocaleDateString() %></p>
-        <a href="/news/<%= news.id %>" class="btn-read">Read More</a>
+  <div class="news-grid">
+    <% newsList.slice(1).forEach(news => { %>
+      <div class="news-card">
+        <img src="/uploads/<%= news.image || 'default.jpg' %>" alt="News Image">
+        <div class="news-card-body">
+          <h2><%= news.title %></h2>
+          <p class="meta">🖊️ <%= news.author %> | 🕒 <%= new Date(news.created_at).toLocaleDateString() %></p>
+          <p><%= news.body.substring(0, 100) %>...</p>
+          <a href="/news/<%= news.id %>" class="btn-read">Read More</a>
+        </div>
       </div>
-    </div>
-  <% }) %>
-</div>
+    <% }) %>
+  </div>
+<% } else { %>
+  <p style="text-align:center;margin-top:50px;">No news articles yet.</p>
+<% } %>
 
 <%- include("partials/footer") %>

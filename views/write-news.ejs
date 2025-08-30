@@ -1,131 +1,35 @@
 <%- include("partials/header") %>
 
-<style>
-  body {
-    background: #f4f6f9;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-  }
-  .form-container {
-    max-width: 700px;
-    margin: 50px auto;
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-  }
-  .form-container h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    font-size: 2rem;
-    color: #222;
-  }
-  .form-group {
-    margin-bottom: 18px;
-  }
-  .form-group label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #333;
-  }
-  .form-group input,
-  .form-group textarea {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-  }
-  .form-group textarea {
-    min-height: 120px;
-    resize: vertical;
-  }
-  .form-group input[type="file"] {
-    border: none;
-  }
-  .image-preview {
-    margin-top: 12px;
-    text-align: center;
-  }
-  .image-preview img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-  }
-  .btn-submit {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 8px;
-    background: #0077cc;
-    color: #fff;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    margin-top: 10px;
-  }
-  .btn-submit:hover {
-    background: #005fa3;
-  }
-  .btn-back {
-    display: inline-block;
-    margin-top: 20px;
-    text-decoration: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    background: #555;
-    color: #fff;
-    font-weight: bold;
-  }
-  .btn-back:hover {
-    background: #333;
-  }
-</style>
-
-<div class="form-container">
-  <h2>📝 Write a News Article</h2>
+<div style="max-width:700px;margin:50px auto;background:#fff;padding:30px;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,0.15);">
+  <h2 style="text-align:center;margin-bottom:25px;">📝 Write a News Article</h2>
   <form action="/news" method="POST" enctype="multipart/form-data">
-    <div class="form-group">
-      <label for="title">News Title</label>
-      <input type="text" id="title" name="title" required>
-    </div>
-
-    <div class="form-group">
-      <label for="author">Author Name</label>
-      <input type="text" id="author" name="author" required>
-    </div>
-
-    <div class="form-group">
-      <label for="body">News Content</label>
-      <textarea id="body" name="body" required></textarea>
-    </div>
-
-    <div class="form-group">
-      <label for="image">Upload News Image</label>
-      <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
-      <div class="image-preview" id="imagePreview"></div>
-    </div>
-
-    <button type="submit" class="btn-submit">Publish News 🚀</button>
+    <label>News Title</label>
+    <input type="text" name="title" required style="width:100%;padding:12px;margin-bottom:15px;border-radius:8px;border:1px solid #ccc;">
+    <label>Author Name</label>
+    <input type="text" name="author" required style="width:100%;padding:12px;margin-bottom:15px;border-radius:8px;border:1px solid #ccc;">
+    <label>News Content</label>
+    <textarea name="body" required style="width:100%;padding:12px;margin-bottom:15px;border-radius:8px;border:1px solid #ccc;min-height:120px;"></textarea>
+    <label>Upload Image</label>
+    <input type="file" name="image" accept="image/*" onchange="previewImage(event)" style="margin-bottom:10px;">
+    <div id="imagePreview" style="text-align:center;margin-bottom:15px;"></div>
+    <button type="submit" style="width:100%;padding:14px;background:#0077cc;color:#fff;border:none;border-radius:8px;">Publish News 🚀</button>
   </form>
-
-  <a href="/" class="btn-back">⬅ Back to Home</a>
+  <a href="/" style="display:inline-block;margin-top:20px;text-decoration:none;padding:10px 16px;background:#555;color:#fff;border-radius:6px;">⬅ Back to Home</a>
 </div>
 
 <script>
-  function previewImage(event) {
-    const preview = document.getElementById('imagePreview');
-    preview.innerHTML = '';
-    const file = event.target.files[0];
-    if (file) {
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
-      preview.appendChild(img);
-    }
+function previewImage(event){
+  const preview=document.getElementById('imagePreview');
+  preview.innerHTML='';
+  const file=event.target.files[0];
+  if(file){
+    const img=document.createElement('img');
+    img.src=URL.createObjectURL(file);
+    img.style.maxWidth='100%';
+    img.style.borderRadius='8px';
+    preview.appendChild(img);
   }
+}
 </script>
 
 <%- include("partials/footer") %>

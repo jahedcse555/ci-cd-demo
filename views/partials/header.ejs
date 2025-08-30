@@ -1,15 +1,20 @@
-<header class="site-header">
-  <div class="container header-container">
-    <div class="site-logo"><a href="/">NewsPortal</a></div>
-    <nav>
-      <% if (user) { %>
-        <a href="/news/new" class="btn-primary">Write News</a>
-        <span>Welcome, <%= user.username %></span>
-        <a href="/logout" class="btn-back">Logout</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>News Portal</title>
+  <link rel="stylesheet" href="/public/styles.css">
+</head>
+<body>
+  <nav style="background:#c70039;padding:15px;color:#fff;display:flex;justify-content:space-between;">
+    <a href="/" style="color:#fff;font-weight:bold;font-size:1.2rem;">NewsPortal</a>
+    <div>
+      <% if (!user) { %>
+        <a href="/login" style="color:#fff;margin-right:15px;">Login</a>
+        <a href="/register" style="color:#fff;">Register</a>
       <% } else { %>
-        <a href="/login" class="btn-primary">Login</a>
-        <a href="/register" class="btn-primary">Register</a>
+        <a href="/news/write" style="color:#fff;margin-right:15px;">Write News</a>
+        <a href="/logout" style="color:#fff;">Logout</a>
       <% } %>
-    </nav>
-  </div>
-</header>
+    </div>
+  </nav>

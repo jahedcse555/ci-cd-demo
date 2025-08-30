@@ -1,0 +1,39 @@
+<%- include("partials/header") %>
+
+<div style="max-width:700px;margin:50px auto;background:#fff;padding:30px;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,0.15);">
+  <h2 style="text-align:center;margin-bottom:25px;">✏️ Edit News Article</h2>
+  <form action="/news/<%= news.id %>/edit" method="POST" enctype="multipart/form-data">
+    <label>News Title</label>
+    <input type="text" name="title" required value="<%= news.title %>" style="width:100%;padding:12px;margin-bottom:15px;border-radius:8px;border:1px solid #ccc;">
+    <label>Author Name</label>
+    <input type="text" name="author" required value="<%= news.author %>" style="width:100%;padding:12px;margin-bottom:15px;border-radius:8px;border:1px solid #ccc;">
+    <label>News Content</label>
+    <textarea name="body" required style="width:100%;padding:12px;margin-bottom:15px;border-radius:8px;border:1px solid #ccc;min-height:120px;"><%= news.body %></textarea>
+    <label>Change Image</label>
+    <input type="file" name="image" accept="image/*" onchange="previewImage(event)" style="margin-bottom:10px;">
+    <div id="imagePreview" style="text-align:center;margin-bottom:15px;">
+      <% if(news.image){ %>
+        <img src="/uploads/<%= news.image %>" style="max-width:100%;border-radius:8px;">
+      <% } %>
+    </div>
+    <button type="submit" style="width:100%;padding:14px;background:#0077cc;color:#fff;border:none;border-radius:8px;">Update News ✅</button>
+  </form>
+  <a href="/news/<%= news.id %>" style="display:inline-block;margin-top:20px;text-decoration:none;padding:10px 16px;background:#555;color:#fff;border-radius:6px;">⬅ Back to Details</a>
+</div>
+
+<script>
+function previewImage(event){
+  const preview=document.getElementById('imagePreview');
+  preview.innerHTML='';
+  const file=event.target.files[0];
+  if(file){
+    const img=document.createElement('img');
+    img.src=URL.createObjectURL(file);
+    img.style.maxWidth='100%';
+    img.style.borderRadius='8px';
+    preview.appendChild(img);
+  }
+}
+</script>
+
+<%- include("partials/footer") %>

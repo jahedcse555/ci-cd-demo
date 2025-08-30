@@ -16,7 +16,7 @@ app.use(session({
   saveUninitialized: false
 }));
 
-// Multer setup for image uploads
+// Multer for image upload
 const storage = multer.diskStorage({
   destination: "./uploads/",
   filename: (req, file, cb) => {
@@ -31,7 +31,7 @@ let users = [
 ];
 let newsList = [];
 
-// Middleware to make user available in all views
+// Make user available in views
 app.use((req, res, next) => {
   res.locals.user = req.session.user;
   next();
@@ -39,10 +39,8 @@ app.use((req, res, next) => {
 
 // ===== Routes =====
 
-// Home page
-app.get("/", (req, res) => {
-  res.render("index", { newsList });
-});
+// Home
+app.get("/", (req, res) => res.render("index", { newsList }));
 
 // News details
 app.get("/news/:id", (req, res) => {
@@ -51,7 +49,7 @@ app.get("/news/:id", (req, res) => {
   res.render("news-details", { news });
 });
 
-// Write news (only logged in)
+// Write news
 app.get("/news/write", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
   res.render("write-news");
@@ -73,7 +71,7 @@ app.post("/news", upload.single("image"), (req, res) => {
   res.redirect("/");
 });
 
-// Edit & Delete news (only author/admin)
+// Edit news
 app.get("/news/:id/edit", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
   const news = newsList.find(n => n.id == req.params.id);
@@ -94,11 +92,12 @@ app.post("/news/:id/edit", upload.single("image"), (req, res) => {
   res.redirect("/news/" + news.id);
 });
 
+// Delete news (soft delete)
 app.post("/news/:id/delete", (req, res) => {
   const news = newsList.find(n => n.id == req.params.id);
   if (!news) return res.send("News not found");
   if (req.session.user.role !== "admin" && req.session.user.id !== news.user_id) return res.send("Unauthorized");
-  news.deleted = true; // soft delete
+  news.deleted = true;
   res.redirect("/");
 });
 
@@ -128,24 +127,6 @@ app.get("/logout", (req, res) => {
   res.redirect("/");
 });
 
-// ===== Admin Dashboard =====
-app.get("/admin", (req, res) => {
-  if (!req.session.user || req.session.user.role !== "admin") return res.send("Unauthorized");
-  res.render("admin-dashboard", { users, news: newsList });
-});
-
-app.post("/admin/users/:id/promote", (req, res) => {
-  const user = users.find(u => u.id == req.params.id);
-  if (user) user.role = "admin";
-  res.redirect("/admin");
-});
-
-app.post("/admin/users/:id/demote", (req, res) => {
-  const user = users.find(u => u.id == req.params.id);
-  if (user && user.username !== "admin") user.role = "user";
-  res.redirect("/admin");
-});
-
-// ===== Start Server =====
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Server running on port", PORT));

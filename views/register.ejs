@@ -1,13 +1,12 @@
 <%- include("partials/header") %>
-<div class="container form-container">
-  <h2>Register</h2>
-  <% if (error) { %><p style="color:red;"><%= error %></p><% } %>
-  <form action="/register" method="post">
+<div style="max-width:400px;margin:50px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+  <h2 style="text-align:center;">Register</h2>
+  <form method="POST" action="/register">
     <label>Username</label>
-    <input type="text" name="username" required>
+    <input type="text" name="username" required style="width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid #ccc;">
     <label>Password</label>
-    <input type="password" name="password" required>
-    <button type="submit" class="btn-primary">Register</button>
+    <input type="password" name="password" required style="width:100%;padding:10px;margin-bottom:12px;border-radius:6px;border:1px solid #ccc;">
+    <button type="submit" style="width:100%;padding:12px;background:#28a745;color:#fff;border:none;border-radius:6px;margin-top:10px;">Register</button>
   </form>
 </div>
 <%- include("partials/footer") %>
