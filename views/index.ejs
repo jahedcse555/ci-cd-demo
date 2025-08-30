@@ -10,7 +10,7 @@
 
 <header class="site-header">
   <div class="container header-container">
-    <h1 class="site-logo"><a href="/">📰 NewsPortal</a></h1>
+    <h1 class="site-logo"><a href="/">📰 Jahed News</a></h1>
     <nav>
       <% if(user){ %>
         <span>Welcome, <%= user.username %></span>
@@ -29,6 +29,7 @@
     <p class="empty-msg">No news yet. Be the first to publish!</p>
   <% } else { %>
 
+  <!-- Featured First News -->
   <section class="featured-news">
     <% let first = news[0]; %>
     <div class="featured-card">
@@ -51,6 +52,7 @@
     </div>
   </section>
 
+  <!-- Grid News -->
   <section class="news-grid">
     <% news.slice(1).forEach(article=>{ %>
       <div class="news-card">
