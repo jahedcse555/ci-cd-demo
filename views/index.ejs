@@ -25,53 +25,51 @@
 </header>
 
 <main class="container">
-  <% if(news.length === 0){ %>
+  <% if(news.length===0){ %>
     <p class="empty-msg">No news yet. Be the first to publish!</p>
   <% } else { %>
-    <section class="featured-news">
-      <% let first = news[0]; %>
-      <div class="featured-card">
-        <% if(first.image){ %>
-          <img src="<%= first.image %>" alt="<%= first.title %>">
-        <% } %>
-        <h2 class="news-title"><%= first.title %></h2>
-        <p class="news-summary"><%= first.summary %></p>
-        <div class="news-meta">
-          <span class="author">By <strong><%= first.author %></strong></span>
-          <span class="time">🕒 <%= new Date(first.created_at).toLocaleString() %></span>
-        </div>
-        <% if(user && (user.username === first.author || user.role === "admin")){ %>
-        <div class="news-actions">
-          <a href="/news/<%= first.id %>" class="btn btn-readmore">Read More</a>
+
+  <section class="featured-news">
+    <% let first = news[0]; %>
+    <div class="featured-card">
+      <% if(first.image){ %>
+        <img src="<%= first.image %>" alt="<%= first.title %>">
+      <% } %>
+      <h2 class="news-title"><%= first.title %></h2>
+      <p class="news-summary"><%= first.summary %></p>
+      <div class="news-meta">
+        <span class="author">By <%= first.author %></span>
+        <span class="time">🕒 <%= new Date(first.created_at).toLocaleString() %></span>
+      </div>
+      <div class="news-actions">
+        <a href="/news/<%= first.id %>" class="btn btn-readmore">Read More</a>
+        <% if(user && (user.username===first.author || user.role==="admin")){ %>
           <a href="/edit/<%= first.id %>" class="btn btn-edit">Edit</a>
           <a href="/delete/<%= first.id %>" class="btn btn-delete" onclick="return confirm('Are you sure?')">Delete</a>
-        </div>
-        <% } else { %>
-        <a href="/news/<%= first.id %>" class="btn btn-readmore">Read More</a>
         <% } %>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="news-grid">
-      <% news.slice(1).forEach(article => { %>
-        <div class="news-card">
-          <% if(article.image){ %>
-            <img src="<%= article.image %>" alt="<%= article.title %>">
-          <% } %>
-          <h3 class="news-title"><%= article.title %></h3>
-          <p class="news-summary"><%= article.summary %></p>
-          <% if(user && (user.username === article.author || user.role === "admin")){ %>
-          <div class="news-actions">
-            <a href="/news/<%= article.id %>" class="btn btn-readmore">Read More</a>
+  <section class="news-grid">
+    <% news.slice(1).forEach(article=>{ %>
+      <div class="news-card">
+        <% if(article.image){ %>
+          <img src="<%= article.image %>" alt="<%= article.title %>">
+        <% } %>
+        <h3 class="news-title"><%= article.title %></h3>
+        <p class="news-summary"><%= article.summary %></p>
+        <div class="news-actions">
+          <a href="/news/<%= article.id %>" class="btn btn-readmore">Read More</a>
+          <% if(user && (user.username===article.author || user.role==="admin")){ %>
             <a href="/edit/<%= article.id %>" class="btn btn-edit">Edit</a>
             <a href="/delete/<%= article.id %>" class="btn btn-delete" onclick="return confirm('Are you sure?')">Delete</a>
-          </div>
-          <% } else { %>
-            <a href="/news/<%= article.id %>" class="btn btn-readmore">Read More</a>
           <% } %>
         </div>
-      <% }) %>
-    </section>
+      </div>
+    <% }) %>
+  </section>
+
   <% } %>
 </main>
 

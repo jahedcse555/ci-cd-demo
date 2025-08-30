@@ -30,15 +30,16 @@
     <h2 class="news-title"><%= news.title %></h2>
     <p class="news-body"><%= news.content %></p>
     <div class="news-meta">
-      <span class="author">By <strong><%= news.author %></strong></span>
+      <span class="author">By <%= news.author %></span>
       <span class="time">🕒 <%= new Date(news.created_at).toLocaleString() %></span>
     </div>
-    <% if(user && (user.username === news.author || user.role === "admin")){ %>
-      <div class="news-actions">
+    <div class="news-actions">
+      <a href="/" class="btn btn-back">← Back to Home</a>
+      <% if(user && (user.username===news.author || user.role==="admin")){ %>
         <a href="/edit/<%= news.id %>" class="btn btn-edit">Edit</a>
         <a href="/delete/<%= news.id %>" class="btn btn-delete" onclick="return confirm('Are you sure?')">Delete</a>
-      </div>
-    <% } %>
+      <% } %>
+    </div>
   </div>
 </main>
 
