@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= news.title %> - NewsPortal</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-container">
+    <h1 class="site-logo"><a href="/">📰 NewsPortal</a></h1>
+    <nav>
+      <a href="/new" class="btn btn-primary">Write News</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <div class="news-detail-card">
+    <% if(news.image){ %>
+      <img src="<%= news.image %>" alt="<%= news.title %>">
+    <% } %>
+    <h2 class="news-title"><%= news.title %></h2>
+    <p class="news-body"><%= news.content %></p>
+    <div class="news-meta">
+      <span class="author">By <strong><%= news.author %></strong></span>
+      <span class="time">🕒 <%= new Date(news.created_at).toLocaleString() %></span>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; 2025 NewsPortal. All rights reserved.</p>
+  </div>
+</footer>
+
+</body>
+</html>

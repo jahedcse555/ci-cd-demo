@@ -28,12 +28,8 @@
             <img src="<%= article.image %>" alt="<%= article.title %>">
           <% } %>
           <h3 class="news-title"><%= article.title %></h3>
-          <p class="news-body"><%= article.content %></p>
-          <div class="news-meta">
-            <span class="author">By <strong><%= article.author %></strong></span>
-            <span class="time">🕒 <%= new Date(article.created_at).toLocaleString() %></span>
-          </div>
-          <a href="/delete/<%= article.id %>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+          <p class="news-summary"><%= article.summary %></p>
+          <a href="/news/<%= article.id %>" class="read-more-btn">Read More</a>
         </div>
       <% }) %>
     </section>

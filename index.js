@@ -48,6 +48,11 @@ const upload = multer({ storage });
 app.get("/", (req, res) => {
   db.all("SELECT * FROM news ORDER BY created_at DESC", [], (err, rows) => {
     if (err) throw err;
+    // Limit summary length to 200 characters
+    rows = rows.map(row => ({
+      ...row,
+      summary: row.content.length > 200 ? row.content.slice(0, 200) + "..." : row.content
+    }));
     res.render("index", { news: rows });
   });
 });
@@ -67,7 +72,21 @@ app.post("/new", upload.single("image"), (req, res) => {
   );
 });
 
-app.get("/delete/:id", (req, res) => {
+// Detailed news page
+app.get("/news/:id", (req, res) => {
+  db.get("SELECT * FROM news WHERE id = ?", [req.params.id], (err, row) => {
+    if (err) throw err;
+    if (!row) return res.status(404).send("News not found");
+    res.render("details", { news: row });
+  });
+});
+
+// Delete route (can add admin check later)
+app.get("/delete/:id/:author", (req, res) => {
+  const currentUser = req.query.user; // user trying to delete
+  if (currentUser !== req.params.author && currentUser !== "admin") {
+    return res.status(403).send("You cannot delete this news");
+  }
   db.run("DELETE FROM news WHERE id = ?", [req.params.id], (err) => {
     if (err) throw err;
     res.redirect("/");
