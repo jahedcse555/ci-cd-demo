@@ -8,12 +8,12 @@ const multer = require("multer");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Ensure data folder
-const dbFolder = path.join(__dirname, "data");
-if (!fs.existsSync(dbFolder)) fs.mkdirSync(dbFolder, { recursive: true });
+// Ensure uploads folder
+const uploadsDir = path.join(__dirname, "public/uploads");
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 // SQLite DB
-const dbPath = path.join(dbFolder, "news.db");
+const dbPath = path.join(__dirname, "data/news.db");
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) console.error("DB error:", err);
   else console.log("Connected to SQLite DB");
@@ -36,9 +36,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 
-// Multer for image uploads
-const upload = multer({ dest: path.join(__dirname, "public/uploads/") });
-app.use('/uploads', express.static(path.join(__dirname, "public/uploads")));
+// Multer config for image upload
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadsDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = Date.now() + path.extname(file.originalname);
+    cb(null, uniqueName);
+  }
+});
+const upload = multer({ storage });
 
 // Routes
 app.get("/", (req, res) => {

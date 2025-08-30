@@ -18,26 +18,23 @@
 </header>
 
 <main class="container">
-  <% if (news.length === 0) { %>
-    <p class="empty-msg">No news available. Be the first to publish!</p>
+
+  <% if(news.length === 0) { %>
+    <p class="empty-msg">No news yet. Be the first to publish!</p>
   <% } %>
 
-  <!-- Featured News -->
   <% if(news.length > 0) { %>
+    <!-- Featured News -->
     <section class="featured-news">
       <div class="featured-card">
         <% if(news[0].image) { %>
           <img src="<%= news[0].image %>" alt="<%= news[0].title %>">
         <% } %>
-        <h2 class="news-title"><%= news[0].title %></h2>
+        <h2 class="news-title highlighted"><%= news[0].title %></h2>
         <p class="news-body"><%= news[0].content %></p>
         <div class="news-meta">
           <span class="author">By <strong><%= news[0].author %></strong></span>
           <span class="time">🕒 <%= new Date(news[0].created_at).toLocaleString() %></span>
-        </div>
-        <div class="actions">
-          <a href="/edit/<%= news[0].id %>" class="edit-btn">Edit</a>
-          <a href="/delete/<%= news[0].id %>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
         </div>
       </div>
     </section>
@@ -56,16 +53,12 @@
           <span class="author">By <strong><%= article.author %></strong></span>
           <span class="time">🕒 <%= new Date(article.created_at).toLocaleString() %></span>
         </div>
-        <div class="actions">
-          <a href="/edit/<%= article.id %>" class="edit-btn">Edit</a>
-          <a href="/delete/<%= article.id %>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
-        </div>
       </div>
     <% }) %>
   </section>
 </main>
 
-<footer>
+<footer class="site-footer">
   <div class="container">
     <p>&copy; 2025 NewsPortal. All rights reserved.</p>
   </div>
