@@ -1,0 +1,15 @@
+<header class="site-header">
+  <div class="container header-container">
+    <div class="site-logo"><a href="/">NewsPortal</a></div>
+    <nav>
+      <% if (user) { %>
+        <a href="/news/new" class="btn-primary">Write News</a>
+        <span>Welcome, <%= user.username %></span>
+        <a href="/logout" class="btn-back">Logout</a>
+      <% } else { %>
+        <a href="/login" class="btn-primary">Login</a>
+        <a href="/register" class="btn-primary">Register</a>
+      <% } %>
+    </nav>
+  </div>
+</header>

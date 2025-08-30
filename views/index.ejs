@@ -1,85 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NewsPortal</title>
-<link rel="stylesheet" href="/style.css">
-</head>
-<body>
+<%- include("partials/header") %>
 
-<header class="site-header">
-  <div class="container header-container">
-    <h1 class="site-logo"><a href="/">📰 Jahed News</a></h1>
-    <nav>
-      <% if(user){ %>
-        <span>Welcome, <%= user.username %></span>
-        <a href="/new" class="btn btn-primary">Write News</a>
-        <a href="/logout" class="btn btn-delete">Logout</a>
-      <% } else { %>
-        <a href="/login" class="btn btn-primary">Login</a>
-        <a href="/register" class="btn btn-edit">Register</a>
-      <% } %>
-    </nav>
+<style>
+  body {
+    background: #f4f6f9;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #222;
+  }
+  .hero {
+    width: 100%;
+    max-height: 450px;
+    overflow: hidden;
+    border-bottom: 5px solid #c70039;
+    margin-bottom: 30px;
+  }
+  .hero img {
+    width: 100%;
+    object-fit: cover;
+  }
+  .hero-content {
+    position: absolute;
+    bottom: 30px;
+    left: 50px;
+    color: #fff;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+  }
+  .hero-content h1 {
+    font-size: 2.5rem;
+    margin: 0;
+  }
+  .hero-content p {
+    font-size: 1.1rem;
+  }
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+    padding: 20px 40px;
+  }
+  .news-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .news-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  }
+  .news-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  .news-card-body {
+    padding: 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .news-card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: #c70039;
+  }
+  .news-card p {
+    flex-grow: 1;
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 15px;
+  }
+  .news-card .meta {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 12px;
+  }
+  .btn-read {
+    align-self: flex-start;
+    text-decoration: none;
+    background: #0077cc;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+  }
+  .btn-read:hover {
+    background: #005fa3;
+  }
+</style>
+
+<% if (newsList.length > 0) { %>
+  <!-- Featured Hero News -->
+  <div class="hero">
+    <img src="/uploads/<%= newsList[0].image || 'default.jpg' %>" alt="Featured News">
+    <div class="hero-content">
+      <h1><%= newsList[0].title %></h1>
+      <p><%= newsList[0].body.substring(0, 120) %>...</p>
+      <a href="/news/<%= newsList[0].id %>" class="btn-read">Read More</a>
+    </div>
   </div>
-</header>
+<% } %>
 
-<main class="container">
-  <% if(news.length===0){ %>
-    <p class="empty-msg">No news yet. Be the first to publish!</p>
-  <% } else { %>
-
-  <!-- Featured First News -->
-  <section class="featured-news">
-    <% let first = news[0]; %>
-    <div class="featured-card">
-      <% if(first.image){ %>
-        <img src="<%= first.image %>" alt="<%= first.title %>">
-      <% } %>
-      <h2 class="news-title"><%= first.title %></h2>
-      <p class="news-summary"><%= first.summary %></p>
-      <div class="news-meta">
-        <span class="author">By <%= first.author %></span>
-        <span class="time">🕒 <%= new Date(first.created_at).toLocaleString() %></span>
-      </div>
-      <div class="news-actions">
-        <a href="/news/<%= first.id %>" class="btn btn-readmore">Read More</a>
-        <% if(user && (user.username===first.author || user.role==="admin")){ %>
-          <a href="/edit/<%= first.id %>" class="btn btn-edit">Edit</a>
-          <a href="/delete/<%= first.id %>" class="btn btn-delete" onclick="return confirm('Are you sure?')">Delete</a>
-        <% } %>
+<!-- Grid of other news -->
+<div class="news-grid">
+  <% newsList.slice(1).forEach(news => { %>
+    <div class="news-card">
+      <img src="/uploads/<%= news.image || 'default.jpg' %>" alt="News Image">
+      <div class="news-card-body">
+        <h2><%= news.title %></h2>
+        <p><%= news.body.substring(0, 100) %>...</p>
+        <p class="meta">🖊️ <%= news.author %> | 🕒 <%= new Date(news.created_at).toLocaleDateString() %></p>
+        <a href="/news/<%= news.id %>" class="btn-read">Read More</a>
       </div>
     </div>
-  </section>
+  <% }) %>
+</div>
 
-  <!-- Grid News -->
-  <section class="news-grid">
-    <% news.slice(1).forEach(article=>{ %>
-      <div class="news-card">
-        <% if(article.image){ %>
-          <img src="<%= article.image %>" alt="<%= article.title %>">
-        <% } %>
-        <h3 class="news-title"><%= article.title %></h3>
-        <p class="news-summary"><%= article.summary %></p>
-        <div class="news-actions">
-          <a href="/news/<%= article.id %>" class="btn btn-readmore">Read More</a>
-          <% if(user && (user.username===article.author || user.role==="admin")){ %>
-            <a href="/edit/<%= article.id %>" class="btn btn-edit">Edit</a>
-            <a href="/delete/<%= article.id %>" class="btn btn-delete" onclick="return confirm('Are you sure?')">Delete</a>
-          <% } %>
-        </div>
-      </div>
-    <% }) %>
-  </section>
-
-  <% } %>
-</main>
-
-<footer class="site-footer">
-  <div class="container">
-    <p>&copy; 2025 NewsPortal. All rights reserved.</p>
-  </div>
-</footer>
-
-</body>
-</html>
+<%- include("partials/footer") %>

@@ -1,0 +1,106 @@
+<%- include("partials/header") %>
+
+<style>
+  body {
+    background: #f4f6f9;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #222;
+  }
+  .article-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  }
+  .article-title {
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: #c70039;
+    margin-bottom: 15px;
+  }
+  .article-meta {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  .article-image {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+  .article-body {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #333;
+    margin-bottom: 30px;
+  }
+  .article-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .btn-back {
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: #0077cc;
+    color: #fff;
+    font-weight: bold;
+    transition: background 0.3s ease;
+  }
+  .btn-back:hover {
+    background: #005fa3;
+  }
+  .btn-edit,
+  .btn-delete {
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: bold;
+    margin-left: 10px;
+  }
+  .btn-edit {
+    background: #f39c12;
+  }
+  .btn-edit:hover {
+    background: #d68910;
+  }
+  .btn-delete {
+    background: #e74c3c;
+  }
+  .btn-delete:hover {
+    background: #c0392b;
+  }
+</style>
+
+<div class="article-container">
+  <h1 class="article-title"><%= news.title %></h1>
+  <p class="article-meta">🖊️ <strong><%= news.author %></strong> | 🕒 <%= new Date(news.created_at).toLocaleString() %></p>
+
+  <% if (news.image) { %>
+    <img src="/uploads/<%= news.image %>" alt="News Image" class="article-image">
+  <% } %>
+
+  <div class="article-body">
+    <%= news.body %>
+  </div>
+
+  <div class="article-footer">
+    <a href="/" class="btn-back">⬅ Back to Home</a>
+
+    <div>
+      <a href="/news/<%= news.id %>/edit" class="btn-edit">✏️ Edit</a>
+      <form action="/news/<%= news.id %>/delete" method="POST" style="display:inline;">
+        <button type="submit" class="btn-delete">🗑️ Delete</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include("partials/footer") %>

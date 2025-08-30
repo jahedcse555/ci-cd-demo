@@ -1,0 +1,120 @@
+<%- include("partials/header") %>
+
+<style>
+  .editor-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .editor-container h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 25px;
+    color: #222;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;
+  }
+  input[type="text"],
+  textarea,
+  input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+  }
+  textarea {
+    height: 180px;
+    resize: vertical;
+  }
+  .btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+  }
+  .btn-primary {
+    background: #007bff;
+    color: white;
+  }
+  .btn-primary:hover {
+    background: #0056b3;
+  }
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+  }
+  .btn-secondary:hover {
+    background: #565e64;
+  }
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+  }
+  .image-preview {
+    margin-top: 15px;
+    text-align: center;
+  }
+  .image-preview img {
+    max-width: 100%;
+    max-height: 250px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  }
+</style>
+
+<div class="editor-container">
+  <h1>Write a News Article</h1>
+  <form method="POST" action="/news" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="title">News Title</label>
+      <input type="text" id="title" name="title" required>
+    </div>
+
+    <div class="form-group">
+      <label for="body">News Content</label>
+      <textarea id="body" name="body" required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="image">Upload News Image</label>
+      <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+      <div class="image-preview" id="preview"></div>
+    </div>
+
+    <div class="button-group">
+      <a href="/" class="btn btn-secondary">⬅ Back to Home</a>
+      <button type="submit" class="btn btn-primary">Publish News</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function previewImage(event) {
+    const preview = document.getElementById("preview");
+    preview.innerHTML = "";
+    const file = event.target.files[0];
+    if (file) {
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(file);
+      preview.appendChild(img);
+    }
+  }
+</script>
+
+<%- include("partials/footer") %>
