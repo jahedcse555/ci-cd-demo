@@ -41,8 +41,6 @@ const upload = multer({ dest: path.join(__dirname, "public/uploads/") });
 app.use('/uploads', express.static(path.join(__dirname, "public/uploads")));
 
 // Routes
-
-// Home
 app.get("/", (req, res) => {
   db.all("SELECT * FROM news ORDER BY created_at DESC", [], (err, rows) => {
     if (err) throw err;
@@ -50,10 +48,8 @@ app.get("/", (req, res) => {
   });
 });
 
-// New news form
 app.get("/new", (req, res) => res.render("new"));
 
-// Add news
 app.post("/new", upload.single("image"), (req, res) => {
   const { title, content, author } = req.body;
   const image = req.file ? `/uploads/${req.file.filename}` : null;
@@ -67,7 +63,6 @@ app.post("/new", upload.single("image"), (req, res) => {
   );
 });
 
-// Edit news form
 app.get("/edit/:id", (req, res) => {
   const id = req.params.id;
   db.get("SELECT * FROM news WHERE id = ?", [id], (err, row) => {
@@ -76,7 +71,6 @@ app.get("/edit/:id", (req, res) => {
   });
 });
 
-// Update news
 app.post("/edit/:id", upload.single("image"), (req, res) => {
   const { title, content, author } = req.body;
   const id = req.params.id;
@@ -103,7 +97,6 @@ app.post("/edit/:id", upload.single("image"), (req, res) => {
   }
 });
 
-// Delete news
 app.get("/delete/:id", (req, res) => {
   const id = req.params.id;
   db.run("DELETE FROM news WHERE id = ?", [id], (err) => {
@@ -112,5 +105,4 @@ app.get("/delete/:id", (req, res) => {
   });
 });
 
-// Start server
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

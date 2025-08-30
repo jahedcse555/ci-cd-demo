@@ -1,22 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NewsPortal</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
 <header class="site-header">
   <div class="container header-container">
-    <h1><a href="/">📰 NewsPortal</a></h1>
+    <h1 class="site-logo"><a href="/">📰 NewsPortal</a></h1>
     <nav>
-      <a href="/new" class="btn">Write News</a>
+      <a href="/new" class="btn btn-primary">Write News</a>
     </nav>
   </div>
 </header>
 
 <main class="container">
-  <% if (news.length > 0) { %>
+  <% if (news.length === 0) { %>
+    <p class="empty-msg">No news available. Be the first to publish!</p>
+  <% } %>
+
+  <!-- Featured News -->
+  <% if(news.length > 0) { %>
     <section class="featured-news">
       <div class="featured-card">
-        <% if (news[0].image) { %>
+        <% if(news[0].image) { %>
           <img src="<%= news[0].image %>" alt="<%= news[0].title %>">
         <% } %>
-        <h2><%= news[0].title %></h2>
-        <p><%= news[0].content.length > 300 ? news[0].content.substring(0, 300) + '...' : news[0].content %></p>
-        <small>By <strong><%= news[0].author %></strong> | 🕒 <%= new Date(news[0].created_at).toLocaleString() %></small>
+        <h2 class="news-title"><%= news[0].title %></h2>
+        <p class="news-body"><%= news[0].content %></p>
+        <div class="news-meta">
+          <span class="author">By <strong><%= news[0].author %></strong></span>
+          <span class="time">🕒 <%= new Date(news[0].created_at).toLocaleString() %></span>
+        </div>
         <div class="actions">
           <a href="/edit/<%= news[0].id %>" class="edit-btn">Edit</a>
           <a href="/delete/<%= news[0].id %>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
@@ -25,25 +43,25 @@
     </section>
   <% } %>
 
+  <!-- News Grid -->
   <section class="news-grid">
-    <% if (news.length <= 1) { %>
-      <p class="empty-msg">Be the first to publish more articles!</p>
-    <% } else { %>
-      <% news.slice(1).forEach(article => { %>
-        <div class="news-card">
-          <% if (article.image) { %>
-            <img src="<%= article.image %>" alt="<%= article.title %>">
-          <% } %>
-          <h3><%= article.title %></h3>
-          <p><%= article.content.length > 150 ? article.content.substring(0, 150) + '...' : article.content %></p>
-          <small>By <strong><%= article.author %></strong> | 🕒 <%= new Date(article.created_at).toLocaleString() %></small>
-          <div class="actions">
-            <a href="/edit/<%= article.id %>" class="edit-btn">Edit</a>
-            <a href="/delete/<%= article.id %>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
-          </div>
+    <% news.slice(1).forEach(article => { %>
+      <div class="news-card">
+        <% if(article.image) { %>
+          <img src="<%= article.image %>" alt="<%= article.title %>">
+        <% } %>
+        <h3 class="news-title"><%= article.title %></h3>
+        <p class="news-body"><%= article.content %></p>
+        <div class="news-meta">
+          <span class="author">By <strong><%= article.author %></strong></span>
+          <span class="time">🕒 <%= new Date(article.created_at).toLocaleString() %></span>
         </div>
-      <% }) %>
-    <% } %>
+        <div class="actions">
+          <a href="/edit/<%= article.id %>" class="edit-btn">Edit</a>
+          <a href="/delete/<%= article.id %>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+        </div>
+      </div>
+    <% }) %>
   </section>
 </main>
 
@@ -52,3 +70,6 @@
     <p>&copy; 2025 NewsPortal. All rights reserved.</p>
   </div>
 </footer>
+
+</body>
+</html>

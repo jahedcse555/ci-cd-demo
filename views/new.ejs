@@ -1,17 +1,30 @@
-<h2>Write a News Article</h2>
-<form method="POST" action="/new" enctype="multipart/form-data">
-  <label>Your Name</label>
-  <input type="text" name="author" placeholder="Enter your name" required>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Write News</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="container">
+  <h2>Write a News Article</h2>
+  <form method="POST" action="/new" enctype="multipart/form-data">
+    <label>Your Name</label>
+    <input type="text" name="author" placeholder="Enter your name" required>
 
-  <label>Title</label>
-  <input type="text" name="title" placeholder="Article title" required>
+    <label>Title</label>
+    <input type="text" name="title" placeholder="Article title" required>
 
-  <label>Content</label>
-  <textarea name="content" rows="6" placeholder="Write your news here..." required></textarea>
+    <label>Content</label>
+    <textarea name="content" rows="6" placeholder="Write your news here..." required></textarea>
 
-  <label>Image</label>
-  <input type="file" name="image" accept="image/*">
+    <label>Image</label>
+    <input type="file" name="image" accept="image/*">
 
-  <button type="submit" class="btn">Publish</button>
-</form>
-<a href="/" class="back-link">← Back to Home</a>
+    <button type="submit" class="btn btn-primary">Publish</button>
+  </form>
+  <a href="/" class="back-link">← Back to Home</a>
+</div>
+</body>
+</html>
