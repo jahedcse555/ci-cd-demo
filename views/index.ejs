@@ -1,27 +1,51 @@
-<h2>Latest News</h2>
+<!-- Featured Banner -->
+<header class="site-header">
+  <div class="container header-container">
+    <h1><a href="/">📰 NewsPortal</a></h1>
+    <nav>
+      <a href="/new" class="btn">Write News</a>
+    </nav>
+  </div>
+</header>
 
-<!-- Write News Button -->
-<div style="text-align: right; margin-bottom: 1rem;">
-  <a href="/new" class="btn">📝 Write a News</a>
-</div>
-
-<div class="news-list">
-  <% if (news.length === 0) { %>
-    <p class="empty-msg">Be the first to publish a news article!</p>
+<main class="container">
+  <!-- Featured Article Section (if first news exists) -->
+  <% if (news.length > 0) { %>
+    <section class="featured-news">
+      <div class="featured-card">
+        <h2><%= news[0].title %></h2>
+        <p><%= news[0].content.length > 200 ? news[0].content.substring(0, 200) + '...' : news[0].content %></p>
+        <small>By <strong><%= news[0].author %></strong> | 🕒 <%= new Date(news[0].created_at).toLocaleString() %></small>
+        <div class="actions">
+          <a href="/edit/<%= news[0].id %>" class="edit-btn">Edit</a>
+          <a href="/delete/<%= news[0].id %>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+        </div>
+      </div>
+    </section>
   <% } %>
 
-  <% news.forEach(article => { %>
-    <div class="news-card">
-      <h3><%= article.title %></h3>
-      <p><%= article.content %></p>
-      <small>
-        By <strong><%= article.author %></strong> |
-        🕒 <%= new Date(article.created_at).toLocaleString() %>
-      </small>
-      <div class="actions">
-        <a href="/edit/<%= article.id %>" class="edit-btn">Edit</a>
-        <a href="/delete/<%= article.id %>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
-      </div>
-    </div>
-  <% }) %>
-</div>
+  <!-- News Grid -->
+  <section class="news-grid">
+    <% if (news.length <= 1) { %>
+      <p class="empty-msg">Be the first to publish more articles!</p>
+    <% } else { %>
+      <% news.slice(1).forEach(article => { %>
+        <div class="news-card">
+          <h3><%= article.title %></h3>
+          <p><%= article.content.length > 150 ? article.content.substring(0, 150) + '...' : article.content %></p>
+          <small>By <strong><%= article.author %></strong> | 🕒 <%= new Date(article.created_at).toLocaleString() %></small>
+          <div class="actions">
+            <a href="/edit/<%= article.id %>" class="edit-btn">Edit</a>
+            <a href="/delete/<%= article.id %>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <p>&copy; 2025 NewsPortal. All rights reserved.</p>
+  </div>
+</footer>
