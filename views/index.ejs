@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NewsPortal</title>
+<title>Jahed's News Portal</title>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -18,44 +18,26 @@
 </header>
 
 <main class="container">
-
-  <% if(news.length === 0) { %>
+  <% if(news.length === 0){ %>
     <p class="empty-msg">No news yet. Be the first to publish!</p>
-  <% } %>
-
-  <% if(news.length > 0) { %>
-    <!-- Featured News -->
-    <section class="featured-news">
-      <div class="featured-card">
-        <% if(news[0].image) { %>
-          <img src="<%= news[0].image %>" alt="<%= news[0].title %>">
-        <% } %>
-        <h2 class="news-title highlighted"><%= news[0].title %></h2>
-        <p class="news-body"><%= news[0].content %></p>
-        <div class="news-meta">
-          <span class="author">By <strong><%= news[0].author %></strong></span>
-          <span class="time">🕒 <%= new Date(news[0].created_at).toLocaleString() %></span>
+  <% } else { %>
+    <!-- News Grid -->
+    <section class="news-grid">
+      <% news.forEach(article => { %>
+        <div class="news-card">
+          <% if(article.image){ %>
+            <img src="<%= article.image %>" alt="<%= article.title %>">
+          <% } %>
+          <h3 class="news-title"><%= article.title %></h3>
+          <p class="news-body"><%= article.content %></p>
+          <div class="news-meta">
+            <span class="author">By <strong><%= article.author %></strong></span>
+            <span class="time">🕒 <%= new Date(article.created_at).toLocaleString() %></span>
+          </div>
         </div>
-      </div>
+      <% }) %>
     </section>
   <% } %>
-
-  <!-- News Grid -->
-  <section class="news-grid">
-    <% news.slice(1).forEach(article => { %>
-      <div class="news-card">
-        <% if(article.image) { %>
-          <img src="<%= article.image %>" alt="<%= article.title %>">
-        <% } %>
-        <h3 class="news-title"><%= article.title %></h3>
-        <p class="news-body"><%= article.content %></p>
-        <div class="news-meta">
-          <span class="author">By <strong><%= article.author %></strong></span>
-          <span class="time">🕒 <%= new Date(article.created_at).toLocaleString() %></span>
-        </div>
-      </div>
-    <% }) %>
-  </section>
 </main>
 
 <footer class="site-footer">

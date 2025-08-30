@@ -8,18 +8,18 @@ const multer = require("multer");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Ensure uploads folder
+// Ensure uploads folder exists
 const uploadsDir = path.join(__dirname, "public/uploads");
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 // SQLite DB
 const dbPath = path.join(__dirname, "data/news.db");
 const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) console.error("DB error:", err);
+  if (err) console.error(err);
   else console.log("Connected to SQLite DB");
 });
 
-// Create table
+// Create news table
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS news (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,15 +36,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 
-// Multer config for image upload
+// Multer for image uploads
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadsDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueName = Date.now() + path.extname(file.originalname);
-    cb(null, uniqueName);
-  }
+  destination: (req, file, cb) => cb(null, uploadsDir),
+  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 const upload = multer({ storage });
 
@@ -71,43 +66,8 @@ app.post("/new", upload.single("image"), (req, res) => {
   );
 });
 
-app.get("/edit/:id", (req, res) => {
-  const id = req.params.id;
-  db.get("SELECT * FROM news WHERE id = ?", [id], (err, row) => {
-    if (err) throw err;
-    res.render("edit", { article: row });
-  });
-});
-
-app.post("/edit/:id", upload.single("image"), (req, res) => {
-  const { title, content, author } = req.body;
-  const id = req.params.id;
-  const image = req.file ? `/uploads/${req.file.filename}` : null;
-
-  if (image) {
-    db.run(
-      "UPDATE news SET title = ?, content = ?, author = ?, image = ? WHERE id = ?",
-      [title, content, author, image, id],
-      (err) => {
-        if (err) throw err;
-        res.redirect("/");
-      }
-    );
-  } else {
-    db.run(
-      "UPDATE news SET title = ?, content = ?, author = ? WHERE id = ?",
-      [title, content, author, id],
-      (err) => {
-        if (err) throw err;
-        res.redirect("/");
-      }
-    );
-  }
-});
-
 app.get("/delete/:id", (req, res) => {
-  const id = req.params.id;
-  db.run("DELETE FROM news WHERE id = ?", [id], (err) => {
+  db.run("DELETE FROM news WHERE id = ?", [req.params.id], (err) => {
     if (err) throw err;
     res.redirect("/");
   });
