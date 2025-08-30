@@ -4,7 +4,8 @@
   "description": "News portal with login, write news, image upload",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "echo \"No tests yet\""
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
