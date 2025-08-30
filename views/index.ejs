@@ -1,15 +1,19 @@
-<h1>News Articles</h1>
+<h2>Latest News</h2>
 
+<div class="news-list">
 <% if (news.length === 0) { %>
-  <p>Be the first to publish a news article!</p>
+  <p class="empty-msg">Be the first to publish a news article!</p>
 <% } %>
 
 <% news.forEach(article => { %>
-  <article>
-    <h2><%= article.title %></h2>
+  <div class="news-card">
+    <h3><%= article.title %></h3>
     <p><%= article.content %></p>
-    <small>🕒 <%= article.created_at %></small><br>
-    <a href="/edit/<%= article.id %>">Edit</a> |
-    <a href="/delete/<%= article.id %>">Delete</a>
-  </article>
+    <small>🕒 <%= new Date(article.created_at).toLocaleString() %></small>
+    <div class="actions">
+      <a href="/edit/<%= article.id %>" class="edit-btn">Edit</a>
+      <a href="/delete/<%= article.id %>" class="delete-btn" onclick="return confirm('Are you sure?')">Delete</a>
+    </div>
+  </div>
 <% }) %>
+</div>

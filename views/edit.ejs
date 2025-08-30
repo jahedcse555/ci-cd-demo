@@ -1,10 +1,11 @@
-<h2>Edit News Article</h2>
-<form method="POST" action="/edit/<%= article.id %>">
-  <label>Title</label><br>
-  <input type="text" name="title" value="<%= article.title %>" required><br><br>
+<h2><%= article ? "Edit News Article" : "Write a News Article" %></h2>
+<form method="POST" action="<%= article ? '/edit/' + article.id : '/new' %>">
+  <label>Title</label>
+  <input type="text" name="title" value="<%= article ? article.title : '' %>" required>
 
-  <label>Content</label><br>
-  <textarea name="content" rows="5" required><%= article.content %></textarea><br><br>
+  <label>Content</label>
+  <textarea name="content" rows="5" required><%= article ? article.content : '' %></textarea>
 
-  <button type="submit">Update</button>
+  <button type="submit" class="btn"> <%= article ? "Update" : "Publish" %> </button>
 </form>
+<a href="/" class="back-link">← Back to Home</a>
