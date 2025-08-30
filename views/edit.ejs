@@ -1,0 +1,10 @@
+<h2>Edit News Article</h2>
+<form method="POST" action="/edit/<%= article.id %>">
+  <label>Title</label><br>
+  <input type="text" name="title" value="<%= article.title %>" required><br><br>
+
+  <label>Content</label><br>
+  <textarea name="content" rows="5" required><%= article.content %></textarea><br><br>
+
+  <button type="submit">Update</button>
+</form>

@@ -6,12 +6,17 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// setup db
-const db = new sqlite3.Database("./news.db", (err) => {
+// persistent db folder
+const dbPath = path.join(__dirname, "data", "news.db");
+const fs = require("fs");
+if (!fs.existsSync(path.dirname(dbPath))) fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+
+const db = new sqlite3.Database(dbPath, (err) => {
   if (err) console.error("DB error", err);
   else console.log("Connected to SQLite DB");
 });
 
+// create table if not exists
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS news (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,13 +39,36 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/new", (req, res) => {
-  res.render("new");
-});
+app.get("/new", (req, res) => res.render("new"));
 
 app.post("/new", (req, res) => {
   const { title, content } = req.body;
   db.run("INSERT INTO news (title, content) VALUES (?, ?)", [title, content], (err) => {
+    if (err) throw err;
+    res.redirect("/");
+  });
+});
+
+app.get("/edit/:id", (req, res) => {
+  const id = req.params.id;
+  db.get("SELECT * FROM news WHERE id = ?", [id], (err, row) => {
+    if (err) throw err;
+    res.render("edit", { article: row });
+  });
+});
+
+app.post("/edit/:id", (req, res) => {
+  const { title, content } = req.body;
+  const id = req.params.id;
+  db.run("UPDATE news SET title = ?, content = ? WHERE id = ?", [title, content, id], (err) => {
+    if (err) throw err;
+    res.redirect("/");
+  });
+});
+
+app.get("/delete/:id", (req, res) => {
+  const id = req.params.id;
+  db.run("DELETE FROM news WHERE id = ?", [id], (err) => {
     if (err) throw err;
     res.redirect("/");
   });
