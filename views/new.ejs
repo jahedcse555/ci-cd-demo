@@ -1,5 +1,5 @@
 <h2>Write a News Article</h2>
-<form method="POST" action="/new">
+<form method="POST" action="/new" enctype="multipart/form-data">
   <label>Your Name</label>
   <input type="text" name="author" placeholder="Enter your name" required>
 
@@ -7,7 +7,10 @@
   <input type="text" name="title" placeholder="Article title" required>
 
   <label>Content</label>
-  <textarea name="content" rows="5" placeholder="Write your news here..." required></textarea>
+  <textarea name="content" rows="6" placeholder="Write your news here..." required></textarea>
+
+  <label>Image</label>
+  <input type="file" name="image" accept="image/*">
 
   <button type="submit" class="btn">Publish</button>
 </form>

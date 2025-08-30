@@ -55,6 +55,13 @@ body {
   border-radius: 10px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.1);
 }
+.featured-card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
 .featured-card h2 {
   font-size: 1.8rem;
   margin-top: 0;
@@ -63,9 +70,15 @@ body {
   font-size: 1.1rem;
   margin: 1rem 0;
 }
-.featured-card .actions {
-  margin-top: 1rem;
+.featured-card .actions a {
+  text-decoration: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 5px;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
 }
+.edit-btn { background: #fbbf24; color: white; }
+.delete-btn { background: #ef4444; color: white; }
 
 /* ===== News Grid ===== */
 .news-grid {
@@ -73,7 +86,6 @@ body {
   grid-template-columns: 1fr;
   gap: 1.5rem;
 }
-
 .news-card {
   background: white;
   padding: 1.5rem;
@@ -85,6 +97,13 @@ body {
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
+.news-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
+}
 .news-card h3 {
   margin-top: 0;
   color: #1f2937;
@@ -93,6 +112,11 @@ body {
   margin: 0.5rem 0;
   color: #555;
 }
+.news-card small {
+  display: block;
+  margin-top: 0.5rem;
+  color: #666;
+}
 .news-card .actions a {
   text-decoration: none;
   padding: 0.3rem 0.6rem;
@@ -100,8 +124,6 @@ body {
   margin-right: 0.5rem;
   font-size: 0.9rem;
 }
-.edit-btn { background: #fbbf24; color: white; }
-.delete-btn { background: #ef4444; color: white; }
 
 /* ===== Forms ===== */
 form {
