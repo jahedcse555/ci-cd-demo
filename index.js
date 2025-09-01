@@ -2,14 +2,21 @@ const express = require("express");
 const path = require("path");
 const multer = require("multer");
 const session = require("express-session");
+const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Ensure uploads folder exists
+const uploadPath = path.join(__dirname, "public/uploads");
+if (!fs.existsSync(uploadPath)) {
+  fs.mkdirSync(uploadPath, { recursive: true });
+}
+
 // Configure storage for uploaded images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "public/uploads/");
+    cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
@@ -30,17 +37,14 @@ app.use(
 
 app.set("view engine", "ejs");
 
-// Temporary in-memory storage
+// In-memory storage
 let newsArticles = [];
 let users = [];
 let currentId = 1;
 
 // Routes
 app.get("/", (req, res) => {
-  res.render("index", {
-    articles: newsArticles,
-    user: req.session.user,
-  });
+  res.render("index", { articles: newsArticles, user: req.session.user });
 });
 
 app.get("/write", (req, res) => {
@@ -62,7 +66,7 @@ app.post("/write", upload.single("image"), (req, res) => {
       image: req.file ? `/uploads/${req.file.filename}` : null,
     };
 
-    newsArticles.push(newArticle);
+    newsArticles.unshift(newArticle); // add at top
     res.redirect("/");
   } catch (err) {
     console.error("Error publishing news:", err);
@@ -70,14 +74,12 @@ app.post("/write", upload.single("image"), (req, res) => {
   }
 });
 
-// View single article
 app.get("/news/:id", (req, res) => {
   const article = newsArticles.find((n) => n.id == req.params.id);
   if (!article) return res.status(404).send("News not found");
   res.render("details", { article, user: req.session.user });
 });
 
-// Edit article
 app.get("/edit/:id", (req, res) => {
   const article = newsArticles.find((n) => n.id == req.params.id);
   if (!article) return res.status(404).send("News not found");
@@ -98,7 +100,6 @@ app.post("/edit/:id", upload.single("image"), (req, res) => {
   res.redirect("/news/" + article.id);
 });
 
-// Delete article
 app.post("/delete/:id", (req, res) => {
   const article = newsArticles.find((n) => n.id == req.params.id);
   if (!article) return res.status(404).send("News not found");
@@ -109,43 +110,38 @@ app.post("/delete/:id", (req, res) => {
   res.redirect("/");
 });
 
-// Login
+// Auth routes
 app.get("/login", (req, res) => {
-  res.render("login", { user: req.session.user });
+  res.render("login", { user: req.session.user, error: null });
 });
 
 app.post("/login", (req, res) => {
-  const { username } = req.body;
-  let user = users.find((u) => u.username === username);
+  const { username, password } = req.body;
+  const user = users.find((u) => u.username === username && u.password === password);
   if (!user) {
-    user = { username };
-    users.push(user);
+    return res.render("login", { user: null, error: "Invalid credentials" });
   }
   req.session.user = user;
   res.redirect("/");
 });
 
-// Register
 app.get("/register", (req, res) => {
-  res.render("register", { user: req.session.user });
+  res.render("register", { user: req.session.user, error: null });
 });
 
 app.post("/register", (req, res) => {
-  const { username } = req.body;
-  let user = users.find((u) => u.username === username);
-  if (!user) {
-    user = { username };
-    users.push(user);
+  const { username, password } = req.body;
+  if (users.find((u) => u.username === username)) {
+    return res.render("register", { user: null, error: "Username already taken" });
   }
+  const user = { username, password };
+  users.push(user);
   req.session.user = user;
   res.redirect("/");
 });
 
-// Logout
 app.get("/logout", (req, res) => {
   req.session.destroy(() => res.redirect("/"));
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
