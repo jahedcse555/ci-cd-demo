@@ -1,18 +1,9 @@
-<%- include('partials/header', { user }) %>
-
-<div class="container form-container">
-  <h2>Register</h2>
-  <% if (error) { %><p class="error"><%= error %></p><% } %>
-  <form action="/register" method="POST">
-    <label>Username:</label>
-    <input type="text" name="username" required />
-
-    <label>Password:</label>
-    <input type="password" name="password" required />
-
-    <button type="submit" class="btn">Register</button>
-  </form>
-  <p>Already have an account? <a href="/login">Login</a></p>
-</div>
-
-<%- include('partials/footer') %>
+<h2>Register</h2>
+<form action="/register" method="post">
+  <label>Username</label>
+  <input type="text" name="username" required>
+  <label>Password</label>
+  <input type="password" name="password" required>
+  <button type="submit">Register</button>
+</form>
+<a href="/login">Already have an account? Login</a>

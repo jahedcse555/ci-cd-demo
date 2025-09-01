@@ -1,14 +1,9 @@
-<%- include('partials/header', { user }) %>
-
-<div class="container news-details">
+<div class="news-detail">
   <h2><%= article.title %></h2>
   <% if (article.image) { %>
-    <img src="<%= article.image %>" alt="News Image" class="details-image"/>
+    <img src="<%= article.image %>" alt="News Image">
   <% } %>
-  <p class="meta">By <%= article.author %> | <%= article.createdAt.toLocaleString() %></p>
   <p><%= article.content %></p>
-
-  <a href="/" class="btn btn-secondary">Back to Home</a>
+  <p><small>By <%= article.author %> | <%= article.createdAt.toDateString() %></small></p>
+  <a href="/">Back to Home</a>
 </div>
-
-<%- include('partials/footer') %>

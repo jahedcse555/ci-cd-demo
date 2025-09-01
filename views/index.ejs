@@ -1,18 +1,23 @@
-<%- include('partials/header', { user }) %>
-
-<div class="container form-container">
-  <h2>Login</h2>
-  <% if (error) { %><p class="error"><%= error %></p><% } %>
-  <form action="/login" method="POST">
-    <label>Username:</label>
-    <input type="text" name="username" required />
-
-    <label>Password:</label>
-    <input type="password" name="password" required />
-
-    <button type="submit" class="btn">Login</button>
-  </form>
-  <p>No account? <a href="/register">Register</a></p>
-</div>
-
-<%- include('partials/footer') %>
+<% if (articles && articles.length > 0) { %>
+  <div class="news-grid">
+    <% articles.forEach(article => { %>
+      <div class="news-card">
+        <h2><%= article.title %></h2>
+        <% if (article.image) { %>
+          <img src="<%= article.image %>" alt="News Image">
+        <% } %>
+        <p><%= article.content.substring(0,150) %>...</p>
+        <p><small>By <%= article.author %> | <%= article.createdAt.toDateString() %></small></p>
+        <a href="/news/<%= article.id %>">Read More</a>
+        <% if (user && user.username === article.author) { %>
+          <a href="/news/<%= article.id %>/edit">Edit</a>
+          <form action="/news/<%= article.id %>/delete" method="post" style="display:inline;">
+            <button type="submit">Delete</button>
+          </form>
+        <% } %>
+      </div>
+    <% }) %>
+  </div>
+<% } else { %>
+  <p>No news yet.</p>
+<% } %>
