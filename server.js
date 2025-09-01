@@ -9,14 +9,18 @@ const { v4: uuidv4 } = require("uuid");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Ensure folders exist
-const uploadPath = path.join(__dirname, "public/uploads");
-if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
-if (!fs.existsSync("data")) fs.mkdirSync("data");
-const NEWS_FILE = path.join(__dirname, "data/news.json");
-const USERS_FILE = path.join(__dirname, "data/users.json");
+// Ensure folders/files exist
+const dataDir = path.join(__dirname, "data");
+if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+
+const NEWS_FILE = path.join(dataDir, "news.json");
+const USERS_FILE = path.join(dataDir, "users.json");
+
 if (!fs.existsSync(NEWS_FILE)) fs.writeFileSync(NEWS_FILE, "[]");
 if (!fs.existsSync(USERS_FILE)) fs.writeFileSync(USERS_FILE, "[]");
+
+const uploadPath = path.join(__dirname, "public/uploads");
+if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
 
 // Multer setup
 const storage = multer.diskStorage({
@@ -39,7 +43,8 @@ function saveUsers(users) { fs.writeFileSync(USERS_FILE, JSON.stringify(users, n
 
 // Routes
 app.get("/", (req, res) => {
-  res.render("index", { user: req.session.user || null, articles: loadNews() });
+  const articles = loadNews();
+  res.render("index", { user: req.session.user || null, articles });
 });
 
 // Register

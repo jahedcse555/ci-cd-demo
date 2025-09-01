@@ -14,7 +14,6 @@
 <main>
   <% if (articles.length > 0) { %>
     <% const first = articles[articles.length-1]; %>
-    <!-- Timeline first news -->
     <section class="timeline-news">
       <h2><%= first.title %></h2>
       <% if(first.image){ %>
@@ -31,7 +30,6 @@
       <% } %>
     </section>
 
-    <!-- Grid news -->
     <section class="news-grid">
       <% articles.slice(0,-1).reverse().forEach(article => { %>
         <div class="news-card">
