@@ -3,5 +3,5 @@
   <img src="<%= article.image %>" alt="News Image">
 <% } %>
 <p><%= article.content %></p>
-<p><small>By <%= article.author %> | <%= article.createdAt ? article.createdAt.toDateString() : '' %></small></p>
+<p><small>By <%= article.author %> | <%= article.createdAt ? new Date(article.createdAt).toDateString() : '' %></small></p>
 <a href="/">Back to Home</a>

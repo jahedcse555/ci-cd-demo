@@ -7,7 +7,7 @@
           <img src="<%= article.image %>" alt="News Image">
         <% } %>
         <p><%= article.content.substring(0,150) %>...</p>
-        <p><small>By <%= article.author %> | <%= article.createdAt ? article.createdAt.toDateString() : '' %></small></p>
+        <p><small>By <%= article.author %> | <%= article.createdAt ? new Date(article.createdAt).toDateString() : '' %></small></p>
         <a href="/news/<%= article.id %>">Read More</a>
         <% if (user && user.username === article.author) { %>
           <a href="/news/<%= article.id %>/edit">Edit</a>
