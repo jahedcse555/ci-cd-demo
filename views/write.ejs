@@ -2,13 +2,10 @@
 <form action="<%= article ? '/news/' + article.id + '/edit' : '/write' %>" method="post" enctype="multipart/form-data">
   <label>Title</label>
   <input type="text" name="title" value="<%= article ? article.title : '' %>" required>
-
   <label>Content</label>
   <textarea name="content" rows="6" required><%= article ? article.content : '' %></textarea>
-
   <label>Image</label>
   <input type="file" name="image">
-
   <button type="submit"><%= article ? "Update" : "Publish" %></button>
 </form>
 <a href="/">Back to Home</a>
