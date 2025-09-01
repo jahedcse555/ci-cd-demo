@@ -1,24 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Edit News</title>
-<link rel="stylesheet" href="/style.css">
+  <title>Edit News</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<div class="form-container">
-  <h2>Edit News Article</h2>
-  <form method="POST" action="/edit/<%= news.id %>" enctype="multipart/form-data">
-    <label>Title</label>
-    <input type="text" name="title" value="<%= news.title %>" required>
-    <label>Content</label>
-    <textarea name="content" rows="8" required><%= news.content %></textarea>
-    <label>Upload New Image (optional)</label>
-    <input type="file" name="image" accept="image/*">
-    <button type="submit" class="btn btn-primary">Update</button>
-  </form>
-  <a href="/" class="btn btn-back">← Back to Home</a>
-</div>
+  <header>
+    <h1>Edit News</h1>
+  </header>
+
+  <main>
+    <form action="/edit/<%= article.id %>" method="POST" enctype="multipart/form-data">
+      <input type="text" name="title" value="<%= article.title %>" required><br>
+      <textarea name="content" rows="6" required><%= article.content %></textarea><br>
+      <input type="file" name="image" accept="image/*"><br>
+      <button type="submit">Update</button>
+    </form>
+    <a href="/">⬅ Back to Home</a>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 News Portal</p>
+  </footer>
 </body>
 </html>

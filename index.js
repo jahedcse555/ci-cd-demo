@@ -1,128 +1,151 @@
 const express = require("express");
-const session = require("express-session");
-const multer = require("multer");
 const path = require("path");
-const bcrypt = require("bcryptjs");
+const multer = require("multer");
+const session = require("express-session");
 
 const app = express();
-app.set("view engine", "ejs");
-app.use(express.urlencoded({ extended: true }));
-app.use("/public", express.static(path.join(__dirname, "public")));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+const PORT = process.env.PORT || 3000;
 
-app.use(session({
-  secret: "news_secret",
-  resave: false,
-  saveUninitialized: false
-}));
-
-// Multer setup for image uploads
+// Configure storage for uploaded images
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+  destination: (req, file, cb) => {
+    cb(null, "public/uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
 });
 const upload = multer({ storage });
 
-// In-memory database (replace with real DB in production)
+// Middleware
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  session({
+    secret: "supersecretkey",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
+app.set("view engine", "ejs");
+
+// Temporary in-memory storage
+let newsArticles = [];
 let users = [];
-let newsList = [];
+let currentId = 1;
 
-// Middleware to check login
-function checkAuth(req, res, next){
-  if(req.session.user) next();
-  else res.redirect("/login");
-}
-
-// ===== Routes =====
-
-// Home
+// Routes
 app.get("/", (req, res) => {
-  res.render("index", { newsList, user: req.session.user });
+  res.render("index", {
+    articles: newsArticles,
+    user: req.session.user,
+  });
+});
+
+app.get("/write", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+  res.render("write", { user: req.session.user });
+});
+
+app.post("/write", upload.single("image"), (req, res) => {
+  try {
+    const { title, content } = req.body;
+    const author = req.session.user ? req.session.user.username : "Anonymous";
+
+    const newArticle = {
+      id: currentId++,
+      title,
+      content,
+      author,
+      createdAt: new Date(),
+      image: req.file ? `/uploads/${req.file.filename}` : null,
+    };
+
+    newsArticles.push(newArticle);
+    res.redirect("/");
+  } catch (err) {
+    console.error("Error publishing news:", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// View single article
+app.get("/news/:id", (req, res) => {
+  const article = newsArticles.find((n) => n.id == req.params.id);
+  if (!article) return res.status(404).send("News not found");
+  res.render("details", { article, user: req.session.user });
+});
+
+// Edit article
+app.get("/edit/:id", (req, res) => {
+  const article = newsArticles.find((n) => n.id == req.params.id);
+  if (!article) return res.status(404).send("News not found");
+  if (!req.session.user || req.session.user.username !== article.author)
+    return res.status(403).send("Not authorized");
+  res.render("edit", { article, user: req.session.user });
+});
+
+app.post("/edit/:id", upload.single("image"), (req, res) => {
+  const article = newsArticles.find((n) => n.id == req.params.id);
+  if (!article) return res.status(404).send("News not found");
+  if (!req.session.user || req.session.user.username !== article.author)
+    return res.status(403).send("Not authorized");
+
+  article.title = req.body.title;
+  article.content = req.body.content;
+  if (req.file) article.image = `/uploads/${req.file.filename}`;
+  res.redirect("/news/" + article.id);
+});
+
+// Delete article
+app.post("/delete/:id", (req, res) => {
+  const article = newsArticles.find((n) => n.id == req.params.id);
+  if (!article) return res.status(404).send("News not found");
+  if (!req.session.user || req.session.user.username !== article.author)
+    return res.status(403).send("Not authorized");
+
+  newsArticles = newsArticles.filter((n) => n.id != req.params.id);
+  res.redirect("/");
 });
 
 // Login
-app.get("/login", (req, res) => res.render("login"));
-app.post("/login", async (req, res) => {
-  const user = users.find(u => u.username === req.body.username);
-  if(!user) return res.send("User not found");
-  const match = await bcrypt.compare(req.body.password, user.password);
-  if(match){
-    req.session.user = { id: user.id, username: user.username, role: user.role };
-    res.redirect("/");
-  } else res.send("Wrong password");
+app.get("/login", (req, res) => {
+  res.render("login", { user: req.session.user });
+});
+
+app.post("/login", (req, res) => {
+  const { username } = req.body;
+  let user = users.find((u) => u.username === username);
+  if (!user) {
+    user = { username };
+    users.push(user);
+  }
+  req.session.user = user;
+  res.redirect("/");
 });
 
 // Register
-app.get("/register", (req, res) => res.render("register"));
-app.post("/register", async (req, res) => {
-  const hashed = await bcrypt.hash(req.body.password, 10);
-  const newUser = { id: Date.now(), username: req.body.username, password: hashed, role: "user" };
-  users.push(newUser);
-  req.session.user = { id: newUser.id, username: newUser.username, role: newUser.role };
+app.get("/register", (req, res) => {
+  res.render("register", { user: req.session.user });
+});
+
+app.post("/register", (req, res) => {
+  const { username } = req.body;
+  let user = users.find((u) => u.username === username);
+  if (!user) {
+    user = { username };
+    users.push(user);
+  }
+  req.session.user = user;
   res.redirect("/");
 });
 
 // Logout
 app.get("/logout", (req, res) => {
-  req.session.destroy();
-  res.redirect("/");
+  req.session.destroy(() => res.redirect("/"));
 });
 
-// Write news
-app.get("/news/write", checkAuth, (req, res) => {
-  res.render("write-news", { user: req.session.user });
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
-
-app.post("/news", checkAuth, upload.single("image"), (req, res) => {
-  const { title, body } = req.body;
-  const author = req.session.user.username;
-  const image = req.file ? req.file.filename : "default.jpg";
-  newsList.push({
-    id: Date.now(),
-    title,
-    body,
-    author,
-    user_id: req.session.user.id,
-    image,
-    created_at: new Date()
-  });
-  res.redirect("/");
-});
-
-// Edit news
-app.get("/news/:id/edit", checkAuth, (req,res)=>{
-  const news = newsList.find(n=>n.id==req.params.id);
-  if(!news) return res.send("News not found");
-  if(req.session.user.role!=="admin" && req.session.user.id!==news.user_id) return res.send("Not authorized");
-  res.render("edit-news",{ news, user: req.session.user });
-});
-
-app.post("/news/:id/edit", checkAuth, upload.single("image"), (req,res)=>{
-  const news = newsList.find(n=>n.id==req.params.id);
-  if(!news) return res.send("News not found");
-  if(req.session.user.role!=="admin" && req.session.user.id!==news.user_id) return res.send("Not authorized");
-  news.title = req.body.title;
-  news.body = req.body.body;
-  if(req.file) news.image = req.file.filename;
-  res.redirect(`/news/${news.id}`);
-});
-
-// Delete news
-app.post("/news/:id/delete", checkAuth, (req,res)=>{
-  const news = newsList.find(n=>n.id==req.params.id);
-  if(!news) return res.send("News not found");
-  if(req.session.user.role!=="admin" && req.session.user.id!==news.user_id) return res.send("Not authorized");
-  newsList = newsList.filter(n=>n.id!=req.params.id);
-  res.redirect("/");
-});
-
-// News details
-app.get("/news/:id", (req,res)=>{
-  const news = newsList.find(n=>n.id==req.params.id);
-  if(!news) return res.send("News not found");
-  res.render("news-details",{ news, user: req.session.user });
-});
-
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, ()=>console.log(`Server running on http://localhost:${PORT}`));

@@ -1,39 +1,64 @@
-<%- include("partials/header") %>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>News Portal</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1>News Portal</h1>
+    <nav>
+      <a href="/">Home</a>
+      <% if (user) { %>
+        <a href="/write">Write News</a>
+        <a href="/logout">Logout (<%= user.username %>)</a>
+      <% } else { %>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+      <% } %>
+    </nav>
+  </header>
 
-<div class="hero">
-  <% if(newsList.length > 0){ %>
-    <img src="/uploads/<%= newsList[0].image %>" alt="Hero News">
-    <div class="hero-content">
-      <h1><%= newsList[0].title %></h1>
-      <p><%= newsList[0].body.substring(0,200) %>...</p>
-      <a href="/news/<%= newsList[0].id %>" class="btn-read">Read More</a>
-    </div>
-  <% } else { %>
-    <img src="/uploads/default.jpg" alt="No News">
-    <div class="hero-content">
-      <h1>No News Yet</h1>
-    </div>
-  <% } %>
-</div>
-
-<div class="news-grid">
-  <% newsList.slice(1).forEach(n => { %>
-    <div class="news-card">
-      <img src="/uploads/<%= n.image %>" alt="News Image">
-      <div class="news-card-body">
-        <h2><%= n.title %></h2>
-        <p><%= n.body.substring(0,100) %>...</p>
-        <div class="meta">By <%= n.author %> | <%= n.created_at.toDateString() %></div>
-        <a href="/news/<%= n.id %>" class="btn-read">Read More</a>
-        <% if(user && (user.role === "admin" || user.id === n.user_id)){ %>
-          <a href="/news/<%= n.id %>/edit" class="btn-read">Edit</a>
-          <form action="/news/<%= n.id %>/delete" method="POST" style="display:inline;">
-            <button type="submit" class="btn-read">Delete</button>
-          </form>
+  <main>
+    <% if (articles.length > 0) { %>
+      <!-- Featured first article -->
+      <div class="featured">
+        <h2><%= articles[0].title %></h2>
+        <% if (articles[0].image) { %>
+          <img src="<%= articles[0].image %>" alt="News Image">
         <% } %>
+        <p><%= articles[0].content.substring(0, 200) %>...</p>
+        <p><small>By <%= articles[0].author %> | <%= articles[0].createdAt.toLocaleString() %></small></p>
+        <a href="/news/<%= articles[0].id %>">Read More</a>
       </div>
-    </div>
-  <% }) %>
-</div>
 
-<%- include("partials/footer") %>
+      <!-- Grid of other articles -->
+      <div class="grid">
+        <% articles.slice(1).forEach(article => { %>
+          <div class="card">
+            <h3><%= article.title %></h3>
+            <% if (article.image) { %>
+              <img src="<%= article.image %>" alt="News Image">
+            <% } %>
+            <p><%= article.content.substring(0, 100) %>...</p>
+            <p><small>By <%= article.author %> | <%= article.createdAt.toLocaleString() %></small></p>
+            <a href="/news/<%= article.id %>">Read More</a>
+            <% if (user && user.username === article.author) { %>
+              <a href="/edit/<%= article.id %>">Edit</a>
+              <form action="/delete/<%= article.id %>" method="POST" style="display:inline;">
+                <button type="submit">Delete</button>
+              </form>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p>No news articles yet. Be the first to publish!</p>
+    <% } %>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 News Portal</p>
+  </footer>
+</body>
+</html>

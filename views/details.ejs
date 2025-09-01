@@ -1,52 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><%= news.title %> - NewsPortal</title>
-<link rel="stylesheet" href="/style.css">
+  <title><%= article.title %></title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<header class="site-header">
-  <div class="container header-container">
-    <h1 class="site-logo"><a href="/">📰 NewsPortal</a></h1>
-    <nav>
-      <% if(user){ %>
-        <span>Welcome, <%= user.username %></span>
-        <a href="/logout" class="btn btn-delete">Logout</a>
-      <% } else { %>
-        <a href="/login" class="btn btn-primary">Login</a>
-        <a href="/register" class="btn btn-edit">Register</a>
-      <% } %>
-    </nav>
-  </div>
-</header>
+  <header>
+    <h1><%= article.title %></h1>
+  </header>
 
-<main class="container">
-  <div class="news-detail-card">
-    <% if(news.image){ %>
-      <img src="<%= news.image %>" alt="<%= news.title %>">
+  <main>
+    <% if (article.image) { %>
+      <img src="<%= article.image %>" alt="News Image" class="detail-image">
     <% } %>
-    <h2 class="news-title"><%= news.title %></h2>
-    <p class="news-body"><%= news.content %></p>
-    <div class="news-meta">
-      <span class="author">By <%= news.author %></span>
-      <span class="time">🕒 <%= new Date(news.created_at).toLocaleString() %></span>
-    </div>
-    <div class="news-actions">
-      <a href="/" class="btn btn-back">← Back to Home</a>
-      <% if(user && (user.username===news.author || user.role==="admin")){ %>
-        <a href="/edit/<%= news.id %>" class="btn btn-edit">Edit</a>
-        <a href="/delete/<%= news.id %>" class="btn btn-delete" onclick="return confirm('Are you sure?')">Delete</a>
-      <% } %>
-    </div>
-  </div>
-</main>
+    <p><%= article.content %></p>
+    <p><small>By <%= article.author %> | <%= article.createdAt.toLocaleString() %></small></p>
+    <a href="/">⬅ Back to Home</a>
+  </main>
 
-<footer class="site-footer">
-  <div class="container">
-    <p>&copy; 2025 NewsPortal. All rights reserved.</p>
-  </div>
-</footer>
+  <footer>
+    <p>&copy; 2025 News Portal</p>
+  </footer>
 </body>
 </html>
