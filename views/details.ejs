@@ -1,9 +1,7 @@
-<div class="news-detail">
-  <h2><%= article.title %></h2>
-  <% if (article.image) { %>
-    <img src="<%= article.image %>" alt="News Image">
-  <% } %>
-  <p><%= article.content %></p>
-  <p><small>By <%= article.author %> | <%= article.createdAt.toDateString() %></small></p>
-  <a href="/">Back to Home</a>
-</div>
+<h2><%= article.title %></h2>
+<% if (article.image) { %>
+  <img src="<%= article.image %>" alt="News Image">
+<% } %>
+<p><%= article.content %></p>
+<p><small>By <%= article.author %> | <%= article.createdAt.toDateString() %></small></p>
+<a href="/">Back to Home</a>

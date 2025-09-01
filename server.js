@@ -3,14 +3,19 @@ const session = require("express-session");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Setup storage for uploaded images
+// Ensure uploads folder exists
+const uploadPath = path.join(__dirname, "public/uploads");
+if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
+
+// Multer setup
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "public/uploads"),
+  destination: (req, file, cb) => cb(null, uploadPath),
   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 const upload = multer({ storage });
@@ -18,20 +23,16 @@ const upload = multer({ storage });
 // Middleware
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
-app.use(session({
-  secret: "super-secret-key",
-  resave: false,
-  saveUninitialized: false
-}));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(session({ secret: "secret-key", resave: false, saveUninitialized: false }));
 
-// Fake DB (in-memory)
+// In-memory DB
 let users = [];
 let newsArticles = [];
 
-// Home
+// Routes
 app.get("/", (req, res) => {
-  res.render("index", { user: req.session.user || null, articles: newsArticles });
+  res.render("index", { user: req.session.user || null, articles: newsArticles || [] });
 });
 
 // Register
@@ -69,7 +70,7 @@ app.get("/write", (req, res) => {
 app.post("/write", upload.single("image"), (req, res) => {
   if (!req.session.user) return res.redirect("/login");
   const { title, content } = req.body;
-  const newArticle = {
+  const article = {
     id: uuidv4(),
     title,
     content,
@@ -77,7 +78,7 @@ app.post("/write", upload.single("image"), (req, res) => {
     image: req.file ? `/uploads/${req.file.filename}` : null,
     createdAt: new Date()
   };
-  newsArticles.push(newArticle);
+  newsArticles.push(article);
   res.redirect("/");
 });
 
@@ -88,7 +89,7 @@ app.get("/news/:id", (req, res) => {
   res.render("detail", { user: req.session.user || null, article });
 });
 
-// Edit
+// Edit News
 app.get("/news/:id/edit", (req, res) => {
   const article = newsArticles.find(a => a.id === req.params.id);
   if (!article || !req.session.user || article.author !== req.session.user.username) {
@@ -107,7 +108,7 @@ app.post("/news/:id/edit", upload.single("image"), (req, res) => {
   res.redirect(`/news/${article.id}`);
 });
 
-// Delete
+// Delete News
 app.post("/news/:id/delete", (req, res) => {
   const index = newsArticles.findIndex(a => a.id === req.params.id);
   if (index === -1) return res.status(404).send("Not found");
@@ -119,10 +120,11 @@ app.post("/news/:id/delete", (req, res) => {
   res.redirect("/");
 });
 
-// Error handling
+// Global error handler
 app.use((err, req, res, next) => {
-  console.error("Unhandled error:", err);
+  console.error(err);
   res.status(500).send("Internal Server Error");
 });
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+// Start server
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
