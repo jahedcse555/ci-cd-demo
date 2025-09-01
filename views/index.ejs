@@ -1,23 +1,61 @@
-<% if (articles && articles.length > 0) { %>
-  <div class="news-grid">
-    <% articles.forEach(article => { %>
-      <div class="news-card">
-        <h2><%= article.title %></h2>
-        <% if (article.image) { %>
-          <img src="<%= article.image %>" alt="News Image">
-        <% } %>
-        <p><%= article.content.substring(0,150) %>...</p>
-        <p><small>By <%= article.author %> | <%= article.createdAt ? new Date(article.createdAt).toDateString() : '' %></small></p>
-        <a href="/news/<%= article.id %>">Read More</a>
-        <% if (user && user.username === article.author) { %>
-          <a href="/news/<%= article.id %>/edit">Edit</a>
-          <form action="/news/<%= article.id %>/delete" method="post" style="display:inline;">
-            <button type="submit">Delete</button>
-          </form>
-        <% } %>
-      </div>
-    <% }) %>
-  </div>
-<% } else { %>
-  <p>No news yet.</p>
-<% } %>
+<header>
+  <h1><a href="/">NewsPortal</a></h1>
+  <nav>
+    <% if(user){ %>
+      <a href="/write">Write News</a>
+      <a href="/logout">Logout (<%= user.username %>)</a>
+    <% } else { %>
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    <% } %>
+  </nav>
+</header>
+
+<main>
+  <% if (articles.length > 0) { %>
+    <% const first = articles[articles.length-1]; %>
+    <!-- Timeline first news -->
+    <section class="timeline-news">
+      <h2><%= first.title %></h2>
+      <% if(first.image){ %>
+        <img src="<%= first.image %>" alt="News Image">
+      <% } %>
+      <p><%= first.content.substring(0,300) %>...</p>
+      <small>By <%= first.author %> | <%= first.createdAt ? new Date(first.createdAt).toDateString() : '' %></small>
+      <a class="btn" href="/news/<%= first.id %>">Read More</a>
+      <% if(user && user.username === first.author){ %>
+        <a class="btn edit-btn" href="/news/<%= first.id %>/edit">Edit</a>
+        <form action="/news/<%= first.id %>/delete" method="post" style="display:inline;">
+          <button class="btn delete-btn" type="submit">Delete</button>
+        </form>
+      <% } %>
+    </section>
+
+    <!-- Grid news -->
+    <section class="news-grid">
+      <% articles.slice(0,-1).reverse().forEach(article => { %>
+        <div class="news-card">
+          <h3><%= article.title %></h3>
+          <% if(article.image){ %>
+            <img src="<%= article.image %>" alt="News Image">
+          <% } %>
+          <p><%= article.content.substring(0,150) %>...</p>
+          <small>By <%= article.author %> | <%= article.createdAt ? new Date(article.createdAt).toDateString() : '' %></small>
+          <a class="btn" href="/news/<%= article.id %>">Read More</a>
+          <% if(user && user.username === article.author){ %>
+            <a class="btn edit-btn" href="/news/<%= article.id %>/edit">Edit</a>
+            <form action="/news/<%= article.id %>/delete" method="post" style="display:inline;">
+              <button class="btn delete-btn" type="submit">Delete</button>
+            </form>
+          <% } %>
+        </div>
+      <% }) %>
+    </section>
+  <% } else { %>
+    <p>No news yet.</p>
+  <% } %>
+</main>
+
+<footer>
+  &copy; <%= new Date().getFullYear() %> NewsPortal. All Rights Reserved.
+</footer>
