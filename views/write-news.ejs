@@ -1,26 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Write News</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-  <header>
-    <h1>Write a News Article</h1>
-  </header>
+<%- include('partials/header', { user }) %>
 
-  <main>
-    <form action="/write" method="POST" enctype="multipart/form-data">
-      <input type="text" name="title" placeholder="Title" required><br>
-      <textarea name="content" placeholder="Write your news here..." rows="6" required></textarea><br>
-      <input type="file" name="image" accept="image/*"><br>
-      <button type="submit">Publish</button>
-    </form>
-    <a href="/">⬅ Back to Home</a>
-  </main>
+<div class="container form-container">
+  <h2>Write a News Article</h2>
+  <form action="/write" method="POST" enctype="multipart/form-data">
+    <label>Title:</label>
+    <input type="text" name="title" required />
 
-  <footer>
-    <p>&copy; 2025 News Portal</p>
-  </footer>
-</body>
-</html>
+    <label>Content:</label>
+    <textarea name="content" rows="6" required></textarea>
+
+    <label>Upload Image:</label>
+    <input type="file" name="image" accept="image/*" />
+
+    <button type="submit" class="btn">Publish</button>
+    <a href="/" class="btn btn-secondary">Back to Home</a>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

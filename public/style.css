@@ -1,76 +1,134 @@
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  color: #333;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.navbar {
+  background: #111;
+  color: #fff;
+  padding: 1rem 0;
+}
+
+.logo a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.5rem;
+}
+
+.nav-links {
+  list-style: none;
   display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: #f8f9fa;
+  gap: 1rem;
 }
 
-header {
-  background: #333;
-  color: white;
-  padding: 15px;
-  text-align: center;
-}
-
-header nav a {
-  color: white;
-  margin: 0 10px;
+.nav-links a {
+  color: #fff;
   text-decoration: none;
 }
 
-main {
-  flex: 1;
-  padding: 20px;
+.main-content {
+  min-height: 80vh;
+  padding: 2rem 0;
 }
 
-.featured, .card {
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.featured img, .card img {
-  max-width: 100%;
-  border-radius: 6px;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
-  gap: 15px;
-}
-
-form input, form textarea, form button {
+.footer {
+  background: #111;
+  color: #fff;
+  text-align: center;
+  padding: 1rem 0;
+  position: relative;
+  bottom: 0;
   width: 100%;
-  padding: 10px;
-  margin: 8px 0;
 }
 
-form button {
-  background: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.news-card {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.news-card.highlight {
+  grid-column: 1 / -1;
+}
+
+.news-image,
+.details-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.news-content {
+  padding: 1rem;
+}
+
+.meta {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.btn {
+  display: inline-block;
+  margin: 0.5rem 0;
+  padding: 0.5rem 1rem;
+  background: #0073e6;
+  color: #fff;
+  text-decoration: none;
   border-radius: 4px;
 }
 
-form button:hover {
-  background: #0056b3;
+.btn:hover {
+  background: #005bb5;
+}
+
+.btn-edit {
+  background: #ffa500;
+}
+
+.btn-delete {
+  background: #e60000;
+}
+
+.btn-secondary {
+  background: #555;
+}
+
+.form-container {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+label {
+  display: block;
+  margin-top: 1rem;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 .error {
   color: red;
-  margin-bottom: 10px;
-}
-
-footer {
-  background: #333;
-  color: white;
-  text-align: center;
-  padding: 10px;
-  margin-top: auto;
+  margin-bottom: 1rem;
 }

@@ -3,6 +3,7 @@ const path = require("path");
 const multer = require("multer");
 const session = require("express-session");
 const fs = require("fs");
+const bcrypt = require("bcrypt");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,12 +16,8 @@ if (!fs.existsSync(uploadPath)) {
 
 // Configure storage for uploaded images
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
+  destination: (req, file, cb) => cb(null, uploadPath),
+  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
 });
 const upload = multer({ storage });
 
@@ -66,7 +63,7 @@ app.post("/write", upload.single("image"), (req, res) => {
       image: req.file ? `/uploads/${req.file.filename}` : null,
     };
 
-    newsArticles.unshift(newArticle); // add at top
+    newsArticles.unshift(newArticle);
     res.redirect("/");
   } catch (err) {
     console.error("Error publishing news:", err);
@@ -115,12 +112,18 @@ app.get("/login", (req, res) => {
   res.render("login", { user: req.session.user, error: null });
 });
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  const user = users.find((u) => u.username === username && u.password === password);
+  const user = users.find((u) => u.username === username);
   if (!user) {
     return res.render("login", { user: null, error: "Invalid credentials" });
   }
+
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    return res.render("login", { user: null, error: "Invalid credentials" });
+  }
+
   req.session.user = user;
   res.redirect("/");
 });
@@ -129,12 +132,13 @@ app.get("/register", (req, res) => {
   res.render("register", { user: req.session.user, error: null });
 });
 
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
   const { username, password } = req.body;
   if (users.find((u) => u.username === username)) {
     return res.render("register", { user: null, error: "Username already taken" });
   }
-  const user = { username, password };
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = { username, password: hashedPassword };
   users.push(user);
   req.session.user = user;
   res.redirect("/");

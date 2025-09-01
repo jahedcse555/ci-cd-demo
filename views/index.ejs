@@ -1,64 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>News Portal</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-  <header>
-    <h1>News Portal</h1>
-    <nav>
-      <a href="/">Home</a>
-      <% if (user) { %>
-        <a href="/write">Write News</a>
-        <a href="/logout">Logout (<%= user.username %>)</a>
-      <% } else { %>
-        <a href="/login">Login</a>
-        <a href="/register">Register</a>
-      <% } %>
-    </nav>
-  </header>
+<%- include('partials/header', { user }) %>
 
-  <main>
-    <% if (articles.length > 0) { %>
-      <!-- Featured first article -->
-      <div class="featured">
-        <h2><%= articles[0].title %></h2>
-        <% if (articles[0].image) { %>
-          <img src="<%= articles[0].image %>" alt="News Image">
-        <% } %>
-        <p><%= articles[0].content.substring(0, 200) %>...</p>
-        <p><small>By <%= articles[0].author %> | <%= articles[0].createdAt.toLocaleString() %></small></p>
-        <a href="/news/<%= articles[0].id %>">Read More</a>
-      </div>
+<div class="container form-container">
+  <h2>Login</h2>
+  <% if (error) { %><p class="error"><%= error %></p><% } %>
+  <form action="/login" method="POST">
+    <label>Username:</label>
+    <input type="text" name="username" required />
 
-      <!-- Grid of other articles -->
-      <div class="grid">
-        <% articles.slice(1).forEach(article => { %>
-          <div class="card">
-            <h3><%= article.title %></h3>
-            <% if (article.image) { %>
-              <img src="<%= article.image %>" alt="News Image">
-            <% } %>
-            <p><%= article.content.substring(0, 100) %>...</p>
-            <p><small>By <%= article.author %> | <%= article.createdAt.toLocaleString() %></small></p>
-            <a href="/news/<%= article.id %>">Read More</a>
-            <% if (user && user.username === article.author) { %>
-              <a href="/edit/<%= article.id %>">Edit</a>
-              <form action="/delete/<%= article.id %>" method="POST" style="display:inline;">
-                <button type="submit">Delete</button>
-              </form>
-            <% } %>
-          </div>
-        <% }) %>
-      </div>
-    <% } else { %>
-      <p>No news articles yet. Be the first to publish!</p>
-    <% } %>
-  </main>
+    <label>Password:</label>
+    <input type="password" name="password" required />
 
-  <footer>
-    <p>&copy; 2025 News Portal</p>
-  </footer>
-</body>
-</html>
+    <button type="submit" class="btn">Login</button>
+  </form>
+  <p>No account? <a href="/register">Register</a></p>
+</div>
+
+<%- include('partials/footer') %>

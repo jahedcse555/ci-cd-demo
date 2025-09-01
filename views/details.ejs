@@ -1,25 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title><%= article.title %></title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-  <header>
-    <h1><%= article.title %></h1>
-  </header>
+<%- include('partials/header', { user }) %>
 
-  <main>
-    <% if (article.image) { %>
-      <img src="<%= article.image %>" alt="News Image" class="detail-image">
-    <% } %>
-    <p><%= article.content %></p>
-    <p><small>By <%= article.author %> | <%= article.createdAt.toLocaleString() %></small></p>
-    <a href="/">⬅ Back to Home</a>
-  </main>
+<div class="container news-details">
+  <h2><%= article.title %></h2>
+  <% if (article.image) { %>
+    <img src="<%= article.image %>" alt="News Image" class="details-image"/>
+  <% } %>
+  <p class="meta">By <%= article.author %> | <%= article.createdAt.toLocaleString() %></p>
+  <p><%= article.content %></p>
 
-  <footer>
-    <p>&copy; 2025 News Portal</p>
-  </footer>
-</body>
-</html>
+  <a href="/" class="btn btn-secondary">Back to Home</a>
+</div>
+
+<%- include('partials/footer') %>
